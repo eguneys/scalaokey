@@ -1,8 +1,6 @@
 package okey
 
-sealed trait Color {
-  def -(number: Int) = Piece(this, number)
-}
+sealed trait Color
 
 object Color {
 
@@ -10,4 +8,8 @@ object Color {
   case object Black extends Color
   case object Green extends Color
   case object Blue extends Color
+  case object Fake extends Color
+
+
+  val all = List(Red, Black, Green, Blue, Fake)
 }

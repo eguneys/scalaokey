@@ -1,9 +1,11 @@
 package okey
 
+import Piece._
+
 class BoardTest extends OkeyTest {
 
   val emptyBoard = makeBoard
-  val board = makeBoard(Red - 10 -> 1, Blue - 2 -> 2, Green - 3 -> 1)
+  val board = makeBoard(R10, B2, B2, G3)
 
   "a board" should {
 
@@ -12,73 +14,74 @@ class BoardTest extends OkeyTest {
     }
 
     "be queried by single piece" in {
-      emptyBoard(Red - 10) must_== 0
-      board(Red - 10) must_== 1
+      emptyBoard(R10) must_== 0
+      board(R10) must_== 1
     }
 
     "be queried by pieces" in {
-      board(Red - 10, Blue - 2) must beFalse
-      board(Red - 10, Blue - 2, Blue - 2) must beFalse
-      board(Red - 10, Blue - 2, Blue - 2, Blue - 2) must beFalse
-      board(Red - 10, Blue - 2, Blue - 2, Blue - 2, Green - 3) must beFalse
-      board(Red - 10, Blue - 2, Blue - 2, Green - 3) must beTrue
+      board.pieces must havePairs(R10 - 1, B2 - 2, G3 - 1)
+    }
+
+    "must have size" in {
+      emptyBoard.size must_== 0
+      board.size must_== 4
     }
 
     "allow a piece to be placed" in {
-      emptyBoard place Red - 10 must beSome.like {
-        case b => b(Red - 10) must_== 1
+      emptyBoard place R10 must beSome.like {
+        case b => b(R10) must_== 1
       }
 
-      board place Red - 10 must beSome.like {
-        case b => b(Red - 10) must_== 2
+      board place R10 must beSome.like {
+        case b => b(R10) must_== 2
       }
     }
 
     "allow a piece to be taken" in {
-      board take Red - 10 must beSome.like {
-        case b => b(Red - 10) must_== 0
+      board take R10 must beSome.like {
+        case b => b(R10) must_== 0
       }
 
-      board take Blue - 2 must beSome.like {
-        case b => b(Blue - 2) must_== 1
+      board take B2 must beSome.like {
+        case b => b(B2) must_== 1
       }
     }
 
     "not allow an piece to be taken" in {
-      board take Green - 4 must beNone
+      board take G4 must beNone
     }
 
     "allow pieces to be taken" in {
-      board take(Red - 10, Blue - 2) must beSome.like {
-        case b => { b(Blue - 2, Green - 3) must beTrue }
+      board take(R10, B2) must beSome.like {
+        case b => b.pieces must havePairs(B2 - 1, G3 - 1)
       }
     }
 
 
     "not allow pieces to be taken" in {
-      board take(Red - 10, Blue - 2, Blue - 2, Blue - 2) must beNone
-      board take(Red - 10, Blue - 2, Green - 4) must beNone
+      board take(R10, B2, B2, B2) must beNone
+      board take(R10, B2, G4) must beNone
     }
 
     "allow chaining actions" in {
       emptyBoard.seq(
-        _ place Red - 10,
-        _ place Red - 10,
-        _ place Blue - 2,
-        _ take Red - 10,
-        _ place Green - 2,
-        _ take Blue - 2
+        _ place R10,
+        _ place R10,
+        _ place B2,
+        _ take R10,
+        _ place G2,
+        _ take B2
       ) must beSome.like {
-        case b => b(Red - 10, Green - 2) must beTrue
+        case b => b.pieces must havePairs(R10 - 1, G2 - 1)
       }
     }
 
     "fail on bad actions chain" in {
       emptyBoard.seq(
-        _ place Red - 10,
-        _ place Blue - 2,
-        _ take Red - 2,
-        _ place Red - 2
+        _ place R10,
+        _ place B2,
+        _ take R2,
+        _ place R2
       ) must beNone
     }
   }

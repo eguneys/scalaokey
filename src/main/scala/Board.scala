@@ -5,11 +5,6 @@ import Math.{ min, max }
 case class Board(pieces: PieceMap) {
   def apply(piece: Piece): Int = pieces getOrElse(piece, 0)
 
-  def apply(pieces: Piece*): Boolean = {
-    val pieceMap = pieces.groupBy(identity).map(t => t._1 -> t._2.size)
-    pieceMap == this.pieces
-  }
-
   def place(piece: Piece): Option[Board] = apply(piece) match {
     case n => Some(copy(pieces = pieces + (piece -> (n + 1))))
   }
@@ -25,11 +20,17 @@ case class Board(pieces: PieceMap) {
 
   def seq(actions: Board => Option[Board]*): Option[Board] =
     actions.foldLeft(Some(this): Option[Board])(_ flatMap _)
+
+  lazy val size: Int = pieces.values.fold(0)(_+_)
+
+  lazy val pieceList: List[Piece] = pieces.foldLeft(List.empty[Piece]: List[Piece]) {
+    case (acc, (p, count)) => List.fill(count)(p) ::: acc
+  }
 }
 
 object Board {
-  def apply(pieces: Traversable[(Piece, Int)]): Board =
-    Board(pieces.toMap)
+  def apply(pieces: Traversable[Piece]): Board =
+    Board(pieces groupBy identity map (t => t._1 -> t._2.size) toMap)
 
-  def empty: Board = Board(Nil)
+  def empty: Board = Board(List.empty[Piece])
 }
