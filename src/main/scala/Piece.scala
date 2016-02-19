@@ -1,13 +1,26 @@
 package okey
 
+import Math.{ max, min }
+
 case class Piece(color: Color, number: Int) {
 
   lazy val up: Piece = copy(number = (number % 13) + 1)
 
   def -(number: Int) = this -> number
+
+  def w: List[Piece] = List(this, this)
+
+  def |>(stop: Int): List[Piece] = Range(number, min(14, number + stop)) map(Piece(color, _)) toList
+
+  def <|(stop: Int): List[Piece] = Range(number, max(0, number - stop), -1) map(Piece(color, _)) toList
+
+
+  override def toString = color.letter + number.toString
 }
 
 object Piece {
+
+  def <>(number: Int): List[Piece] = Color.all map(_ - number)
 
   val R1 = Piece(Red, 1)
   val R2 = Piece(Red, 2)

@@ -9,7 +9,9 @@ case class Board(pieces: PieceMap) {
     case n => Some(copy(pieces = pieces + (piece -> (n + 1))))
   }
 
-  def take(pieces: Piece*): Option[Board] = pieces.foldLeft(Some(this): Option[Board]) {
+  def take(pieces: Piece*): Option[Board] = take(pieces toList)
+
+  def take(pieces: List[Piece]): Option[Board] = pieces.foldLeft(Some(this): Option[Board]) {
     case (Some(b), piece) =>
       b.pieces get piece map {
         case 1 => copy(pieces = b.pieces - piece)

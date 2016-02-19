@@ -37,7 +37,6 @@ discard pieces: Sides[List[Piece]]
 middle pieces: List[Piece]
 opens: Option[(Sequence, Pair)]
 sign piece: Piece
-player: Side
 
 101
 

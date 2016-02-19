@@ -6,3 +6,7 @@ sealed trait Open {
 
 case class OpenSerie(pieces: List[Piece]) extends Open
 case class OpenPair(pieces: List[Piece]) extends Open
+
+case object OpenPair {
+  def apply(piece: Piece): OpenPair = OpenPair(List(piece, piece))
+}

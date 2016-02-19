@@ -28,5 +28,15 @@ class PieceTest extends OkeyTest {
       R13.up must_== R1
       G1.up must_== G2
     }
+
+    "be used to derive relative pieces" in {
+      "Piece.<>" in { Piece.<>(4) must contain(exactly(R4, L4, G4, B4)) }
+      "R4 |> 3" in { R4 |> 3 must contain(exactly(R4, R5, R6)) }
+      "R7 |> 6" in { R8 |> 6 must contain(exactly(R8, R9, R10, R11, R12, R13)) }
+      "R10 |> 6" in { R10 |> 6 must contain(exactly(R10, R11, R12, R13)) }
+      "R4 <| 4" in {  R4 <| 4 must contain(exactly(R4, R3, R2, R1)) }
+      "R4 <| 5" in {  R4 <| 4 must contain(exactly(R4, R3, R2, R1)) }
+
+    }
   }
 }
