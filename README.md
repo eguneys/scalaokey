@@ -6,9 +6,6 @@ Each player gets 21 pieces
 Turn player gets an extra piece
 
 
-## Actions
-
-
 #### Side
 
 East
@@ -46,6 +43,10 @@ Discard Left
 Discard End
 Open Sequence
 Open Pairs
+
+Process piece to x [l|r|replace]
+Collect Open
+Collect Draw piece
 
 Standard
 

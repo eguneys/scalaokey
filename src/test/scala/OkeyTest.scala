@@ -34,15 +34,15 @@ trait OkeyTest
       ),
       middles = List.fill(18)(middle),
       opens = Some((List(
-        OpenSerie(Piece.<>(10)),
-        OpenSerie(Piece.<>(11)),
-        OpenSerie(Piece.<>(12)),
-        OpenSerie(Piece.<>(13))
+        OpenSerie(EastSide, Piece.<>(10)),
+        OpenSerie(WestSide, Piece.<>(11)),
+        OpenSerie(NorthSide, Piece.<>(12)),
+        OpenSerie(SouthSide, Piece.<>(13))
       ), List(
-        OpenPair(R10),
-        OpenPair(L10),
-        OpenPair(G10),
-        OpenPair(B10)
+        OpenPair(EastSide, R10),
+        OpenPair(EastSide, L10),
+        OpenPair(EastSide, G10),
+        OpenPair(EastSide, B10)
       ))),
       sign = sign)
 
@@ -73,7 +73,9 @@ trait OkeyTest
     (t.sign :: t.middles ::: t.boards.fold(_.pieceList)) must contain(exactly(Piece.initial :_*))
   }
 
-  def havePieces(pieces: Piece*): Matcher[Board] = { b: Board =>
+  def havePieces(pieces: Piece*): Matcher[Board] = havePieces(pieces toList)
+
+  def havePieces(pieces: List[Piece]): Matcher[Board] = { b: Board =>
     b.pieceList must contain(exactly(pieces:_*))
   }
 }

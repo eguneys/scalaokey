@@ -13,7 +13,7 @@ package format
   * g1
   * b1
   * r10l10g10b10 r11l11g11b11 r12l12g12b12 r13l13g13b13
-  * r10r10 l10l10 g10g10 b10b10
+  * er10r10 wl10l10 ng10g10 sb10b10
   * 
   */
 
@@ -34,12 +34,29 @@ package format
 
 object Visual {
 
+  val SideR = """(e|w|n|s)""".r
+
   val PieceR = """(r|l|g|b)([1-9][0-3]?)""".r
+
+  def parseOwnedPieces(str: String): (Side, List[Piece]) = {
+    val side = str(0) match {
+      case SideR(s) => Side(s)
+    }
+
+    val pieces = parsePieces(str.tail)
+
+    (side, pieces)
+  }
 
   def parsePieces(str: String): List[Piece] = {
     PieceR.findAllIn(str).toList map {
       case PieceR(c, n) => Piece(Color(c(0)) get, n.toInt)
     }
+  }
+
+  def trimList(l: Array[String]): List[String] = l match {
+    case Array("") => Nil
+    case l => l toList
   }
 
   def <<(source: String): Table = {
@@ -52,8 +69,11 @@ object Visual {
 
     val opens = filtered drop 10 take 2 match {
       case series :: pairs :: Nil =>
-        (series.split(" ").map { str => OpenSerie(parsePieces(str)) } toList,
-          pairs.split(" ").map { str => OpenPair(parsePieces(str)) } toList)
+        (trimList(series.split(" ")).map(parseOwnedPieces).map { case (side, pieces) =>
+          OpenSerie(side, pieces) } toList,
+          trimList(pairs.split(" ")).map(parseOwnedPieces).map { case (side, pieces) =>
+            OpenPair(side, pieces) } toList
+        )
       case _ => throw new Exception("Invalid visual format " + source)
     }
 
@@ -79,8 +99,8 @@ object Visual {
 
     val opens = table.opens.fold("") {
       case (series, pairs) =>
-        (series map(_.pieces mkString) mkString " ") + "\n" +
-        (pairs map(_.pieces mkString) mkString " ")
+        (series map(s => s.owner.letter + s.pieces.mkString) mkString " ") + "\n" +
+        (pairs map(p => p.owner.letter + p.pieces.mkString) mkString " ")
     }
 
     List(sign, middles, boards, discards, opens) mkString "\n"

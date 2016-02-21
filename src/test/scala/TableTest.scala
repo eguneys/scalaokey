@@ -35,15 +35,14 @@ class TableTest extends OkeyTest {
 
       "have opens be empty" in {
         table.opens must beSome.like {
-          case (sequences, pairs) => {
-            sequences must beEmpty
+          case (series, pairs) =>
+            series must beEmpty
             pairs must beEmpty
-          }
         }
       }
 
-      "have a sign piece and an fake okey piece" in {
-        (table.sign up) must_== table.fakeOkey
+      "have a sign piece and an okey piece" in {
+        (table.sign up) must_== table.okey
       }
 
       "rest of the pieces are in middle" in {
@@ -97,14 +96,13 @@ g1r1r2
 
 l1l2
 """.discard(EastSide, R1) must beSuccess.like {
-          case t => {
+          case t =>
             t.boards(EastSide) must havePieces(G1, R2)
             t.discards(EastSide) must containPieces(R1, L1, L2)
-          }
         }
       }
 
-      "allow pieces to be opened sequence" in {
+      "allow pieces to be opened series" in {
         """
 r13
 
@@ -116,12 +114,11 @@ r1r2r3l1b9l2l3g1g2g3b1b2b3
 
 
 
-g4g5g6
-""".openSequence(EastSide, List(Piece.<>(1), Piece.<>(2), Piece.<>(3))) must beSuccess.like {
-          case t => {
+eg4g5g6
+""".openSeries(EastSide, List(Piece.<>(1), Piece.<>(2), Piece.<>(3))) must beSuccess.like {
+          case t =>
             t.boards(EastSide) must havePieces(B9)
             t must haveOpenSeries(G4.|>(3), Piece.<>(1), Piece.<>(2), Piece.<>(3))
-          }
         }
       }
 
@@ -139,12 +136,108 @@ r1r2r3r1r2r3b9
 
 
 
-g4g4 g5g5
+eg4g4 eg5g5
 """.openPairs(EastSide, List(R1.w, R2.w, R3.w)) must beSuccess.like {
-          case t => {
+          case t =>
             t.boards(EastSide) must havePieces(B9)
             t must haveOpenPairs(G4.w, G5.w, R1.w, R2.w, R3.w)
-          }
+        }
+      }
+
+      "allow open series to be collected" in {
+        val openPieces = List(Piece.<>(1), Piece.<>(2), Piece.<>(3))
+
+        """
+r13
+
+r1r2r3l1b9l2l3g1g2g3b1b2b3
+
+
+
+
+
+
+
+wg4g5g6
+""".seqTable(
+          _ openSeries(EastSide, openPieces),
+          _ collectOpen EastSide
+        ) must beSuccess.like {
+          case t =>
+            t.boards(EastSide) must havePieces(B9 :: openPieces.flatten)
+            t must haveOpenSeries(G4.|>(3))
+        }
+      }
+
+      "allow open pairs to be collected" in {
+        val openPieces = List(R1.w, R2.w, R3.w)
+
+        """
+r13
+
+r1r2r3r1b9r2r3
+
+
+
+
+
+
+
+wg4g5g6
+""".seqTable(
+          _ openPairs(EastSide, openPieces),
+          _ collectOpen EastSide
+        ) must beSuccess.like {
+          case t =>
+            t.boards(EastSide) must havePieces(B9 :: openPieces.flatten)
+            t must haveOpenSeries(G4.|>(3))
+        }
+      }
+
+
+
+
+//       "allow piece to be processed" in {
+//         """
+// r13
+
+// r1r2r3
+
+
+
+
+
+
+
+// g4g5g6
+// """.processPiece(EastSide, R1, Left(1)) must beSuccess.like {
+//           case t =>
+//             t.boards(EastSide) must havePieces(R2, R3)
+//         }
+//       }
+
+
+      "allow open pieces to be collected even if not opened" in {
+        val openPieces = List(R1.w, R2.w, R3.w)
+
+        """
+r13
+
+r1r2r3r1b9r2r3
+
+
+
+
+
+
+
+wg4g5g6
+""".seqTable(
+          _ collectOpen EastSide
+        ) must beSuccess.like {
+          case t =>
+            t.boards(EastSide) must havePieces(B9 :: openPieces.flatten)
+            t must haveOpenSeries(G4.|>(3))
         }
       }
 
@@ -165,12 +258,12 @@ r2r3
 """.discard(EastSide, R1) must beFailure
       }
 
-      "not allow pieces to be opened sequence if not exist" in {
+      "not allow pieces to be opened series if not exist" in {
         """
 r13
 
 r2r3
-""".openSequence(EastSide, List(R1.|>(3))) must beFailure
+""".openSeries(EastSide, List(R1.|>(3))) must beFailure
       }
 
       "not allow pieces to be opened pairs if not exist" in {
