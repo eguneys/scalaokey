@@ -73,6 +73,17 @@ case class Table(
   } yield {
     copy(boards = boards.withSide(side, b1), opens = Some((s1, p1)))
   }) toValid "Cannot open on table"
+
+  def leaveDrawn(side: Side, piece: Piece): Valid[Table] = {
+    val dside = side.previous
+    (for {
+      b1 <- boards(side) take piece
+      d1 = piece :: discards(dside)
+    } yield {
+      copy(boards = boards.withSide(side, b1),
+        discards = discards.withSide(dside, d1))
+    }) toValid "No piece on board " + piece
+  }
 }
 
 object Table {

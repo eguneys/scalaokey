@@ -46,7 +46,7 @@ Open Pairs
 
 Process piece to x [l|r|replace]
 Collect Open
-Collect Draw piece
+Leave Draw piece
 
 Standard
 
