@@ -6,8 +6,6 @@ case class Piece(color: Color, number: Int) {
 
   lazy val up: Piece = copy(number = (number % 13) + 1)
 
-  def -(number: Int) = this -> number
-
   def w: List[Piece] = List(this, this)
 
   def |>(stop: Int): List[Piece] = Range(number, min(14, number + stop)) map(Piece(color, _)) toList

@@ -7,6 +7,17 @@ abstract class Variant(
   val id: Int,
   val name: String) {
 
+  def validMoves(situation: Situation): List[Action] = situation.tableActions filter {
+    case DrawMiddle => !situation.hasDrawnPiece
+    case DrawLeft => !situation.hasDrawnPiece
+    case DiscardPiece => situation.hasDrawnPiece
+    case OpenSeries => situation.hasDrawnPiece
+    case OpenPairs => situation.hasDrawnPiece
+    case _ => false
+  }
+
+
+  def end(situation: Situation): Boolean = false
 }
 
 case class Dealer(side: Side) {

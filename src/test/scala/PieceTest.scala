@@ -10,8 +10,6 @@ class PieceTest extends OkeyTest {
         L13 must_== Piece(Black, 13)
         G1 must_== Piece(Green, 1)
         B2 must_== Piece(Blue, 2)
-
-        R10 - 1 must_== R10 -> 1
       }
       "fake" in {
         F1.color must_== Color.Fake

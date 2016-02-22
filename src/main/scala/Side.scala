@@ -33,6 +33,8 @@ object Side {
     case 'n' => NorthSide
     case 's' => SouthSide
   }
+
+  lazy val all: List[Side] = List(EastSide, WestSide, NorthSide, SouthSide)
 }
 
 case class Sides[A](

@@ -30,6 +30,8 @@ case class Board(pieces: PieceMap) {
 
   lazy val size: Int = pieces.values.fold(0)(_+_)
 
+  lazy val isEmpty: Boolean = size == 0
+
   lazy val pieceList: List[Piece] = pieces.foldLeft(List.empty[Piece]: List[Piece]) {
     case (acc, (p, count)) => List.fill(count)(p) ::: acc
   }

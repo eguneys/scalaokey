@@ -6,12 +6,26 @@ case class Table(
   boards: Sides[Board],
   discards: Sides[List[Piece]] = Sides[List[Piece]],
   middles: List[Piece],
-  opens: Option[(OpenSeries, OpenPairs)] = Some((List.empty[OpenSerie], List.empty[OpenPair])),
-  sign: Piece) {
+  opens: Option[(SerieGroup, PairGroup)] = Some((List.empty[OpenSerie], List.empty[OpenPair])),
+  sign: Piece,
+  variant: Variant) {
 
   import implicitFailures._
 
   lazy val okey: Piece = sign.up
+
+  lazy val actions: Map[Side, List[Action]] = Side.all map { side =>
+    side -> (Action.all filter {
+      case DrawMiddle => (!middles.isEmpty)
+      case DrawLeft => !discards(side.previous).isEmpty
+      case DiscardPiece => !boards(side).isEmpty
+      case OpenSeries => !boards(side).isEmpty
+      case OpenPairs => !boards(side).isEmpty
+      case _ => false
+    })
+  } toMap
+
+  def actionsOf(side: Side): List[Action] = actions(side)
 
   def seqTable(actions: Table => Valid[Table]*): Valid[Table] =
     actions.foldLeft(success(this): Valid[Table])(_ flatMap _)
@@ -92,7 +106,8 @@ object Table {
     Table(
       boards = dealer.boards,
       middles = dealer.middles,
-      sign = dealer.sign
+      sign = dealer.sign,
+      variant = variant
     )
   }
 }

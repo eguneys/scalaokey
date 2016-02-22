@@ -7,6 +7,8 @@ package object okey
     with scalalib.Zero.Syntax
     with scalalib.Zero.Instances
 
+    with scalaz.syntax.std.ToOptionIdOps
+
     with scalaz.std.ListInstances
     with scalaz.std.StringInstances
 
@@ -21,8 +23,8 @@ package object okey
   type PieceMap = Map[Piece, Int]
 
   type PieceGroup = List[List[Piece]]
-  type OpenSeries = List[OpenSerie]
-  type OpenPairs = List[OpenPair]
+  type SerieGroup = List[OpenSerie]
+  type PairGroup = List[OpenPair]
 
   object implicitFailures {
     implicit def stringToFailures(str: String): Failures = scalaz.NonEmptyList(str)

@@ -19,7 +19,7 @@ class BoardTest extends OkeyTest {
     }
 
     "be queried by pieces" in {
-      board.pieces must havePairs(R10 - 1, B2 - 2, G3 - 1)
+      board.pieces must havePairs(R10 -> 1, B2 -> 2, G3 -> 1)
     }
 
     "must have size" in {
@@ -53,7 +53,7 @@ class BoardTest extends OkeyTest {
 
     "allow pieces to be taken" in {
       board take(R10, B2) must beSome.like {
-        case b => b.pieces must havePairs(B2 - 1, G3 - 1)
+        case b => b.pieces must havePairs(B2 -> 1, G3 -> 1)
       }
     }
 
@@ -72,7 +72,7 @@ class BoardTest extends OkeyTest {
         _ place G2,
         _ take B2
       ) must beSome.like {
-        case b => b.pieces must havePairs(R10 - 1, G2 - 1)
+        case b => b.pieces must havePairs(R10 -> 1, G2 -> 1)
       }
     }
 

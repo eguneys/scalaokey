@@ -85,7 +85,8 @@ object Visual {
           discards = Sides(deast, dwest, dnorth, dsouth),
           sign = sign,
           middles = middles,
-          opens = Some(opens)
+          opens = Some(opens),
+          variant = okey.variant.Standard
         )
       case _ => throw new Exception("Invalid visual format " + source)
     }

@@ -8,11 +8,29 @@ import org.specs2.matcher.Matcher
 import org.specs2.mutable.Specification
 import ornicar.scalalib.test.ValidationMatchers
 
-trait OkeyTest
-    extends Specification
+import scalaz.{ Validation => V }
+
+trait OkeyTest extends Specification
     with ValidationMatchers {
 
   implicit def stringToTable(str: String): Table = Visual << str
+
+  implicit def stringToSituationBuilder(str: String) = new {
+    def as(player: Player): Situation = Situation(Visual << str, player)
+  }
+
+  // implicit def richGame(game: Game) = new {
+  //   def playMoves(moves: Action*): Valid[Game] = playMoveList(moves)
+
+  //   def playMoveList(moves: Iterable[Action]): Valid[Game] = {
+  //     val vg = moves.foldLeft(V.success(game): Valid[Game]) { (vg, move) =>
+  //       vg flatMap { g => g(move) }
+  //     }
+  //     vg
+  //   }
+  // }
+
+  def makeGame: Game = Game(makeTable)
 
   def makeTable: Table = Table init okey.variant.Standard
 
@@ -44,7 +62,8 @@ trait OkeyTest
         OpenPair(EastSide, G10),
         OpenPair(EastSide, B10)
       ))),
-      sign = sign)
+      sign = sign,
+      variant = variant.Standard)
 
   def makeBoard(pieces: Piece*): Board =
     Board(pieces)
@@ -77,5 +96,9 @@ trait OkeyTest
 
   def havePieces(pieces: List[Piece]): Matcher[Board] = { b: Board =>
     b.pieceList must contain(exactly(pieces:_*))
+  }
+
+  def bePoss(actions: Action*): Matcher[Situation] = { s: Situation =>
+    s.moves must contain(exactly(actions:_*))
   }
 }

@@ -46,7 +46,7 @@ Open Pairs
 
 Process piece to x [l|r|replace]
 Collect Open
-Leave Draw piece
+Leave Draw
 
 Standard
 
@@ -54,3 +54,29 @@ Draw Left
 Draw Middle
 Discard Left
 Discard End
+
+#### Player
+
+#### Situation
+Middle End
+When middle has no pieces left
+Discard End
+When a player board has no pieces left and player discards piece
+Player Turn End
+When a player discards piece
+
+Available moves
+- Draw middle piece
+  - Discard a piece
+  - Open series
+    - Open series
+    - Collect open
+    - Process piece
+  - Open pairs
+    - Open pairs
+    - Collect open
+    - Process piece
+- Draw left piece
+  - Open series
+  - Open pairs
+  - Leave taken

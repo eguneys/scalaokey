@@ -221,8 +221,8 @@ g1g2g3
 
 
 
-// g4g5g6
-// """.processPiece(EastSide, R1, Left(1)) must beSuccess.like {
+// wg4g5g6
+// """.processPiece(EastSide, 1, R1) must beSuccess.like {
 //           case t =>
 //             t.boards(EastSide) must havePieces(R2, R3)
 //         }
