@@ -15,11 +15,29 @@ case object OpenPair {
 }
 
 sealed trait OpenState {
-
+  val series: Boolean
+  val pairs: Boolean
+  val score: Int
 }
 
-case class OldOpen extends OpenState
+case class OldOpen(series: Boolean, pairs: Boolean, score: Int) extends OpenState
 
 case class NewOpen(
+  series: Boolean,
+  pairs: Boolean,
+  score: Int,
   boardSave: Board,
-  openerSave: Opener) extends OpenState
+  openerSave: Opener) extends OpenState {
+
+  def addScore(s: Int) = copy(score = score + s)
+
+  def commit: OldOpen = OldOpen(series = series, pairs = pairs, score = score)
+}
+
+object OpenState {
+  def series(score: Int, boardSave: Board, openerSave: Opener): NewOpen =
+    NewOpen(true, false, score, boardSave, openerSave)
+
+  def pairs(score: Int, boardSave: Board, openerSave: Opener): NewOpen =
+    NewOpen(false, true, score, boardSave, openerSave)
+}
