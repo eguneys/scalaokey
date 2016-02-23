@@ -85,7 +85,7 @@ object Visual {
           discards = Sides(deast, dwest, dnorth, dsouth),
           sign = sign,
           middles = middles,
-          opens = Some(opens),
+          opener = Some(Opener empty),
           variant = okey.variant.Standard
         )
       case _ => throw new Exception("Invalid visual format " + source)
@@ -98,13 +98,13 @@ object Visual {
     val sign = table.sign.toString
     val middles = table.middles mkString
 
-    val opens = table.opens.fold("") {
-      case (series, pairs) =>
-        (series map(s => s.owner.letter + s.pieces.mkString) mkString " ") + "\n" +
-        (pairs map(p => p.owner.letter + p.pieces.mkString) mkString " ")
-    }
+    // val opens = table.opens.fold("") {
+    //   case (series, pairs) =>
+    //     (series map(s => s.owner.letter + s.pieces.mkString) mkString " ") + "\n" +
+    //     (pairs map(p => p.owner.letter + p.pieces.mkString) mkString " ")
+    // }
 
-    List(sign, middles, boards, discards, opens) mkString "\n"
+    List(sign, middles, boards, discards) mkString "\n"
   }
 
   def addNewLines(str: String) = "\n" + str + "\n"

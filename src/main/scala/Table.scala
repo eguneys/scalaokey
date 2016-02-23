@@ -6,7 +6,7 @@ case class Table(
   boards: Sides[Board],
   discards: Sides[List[Piece]] = Sides[List[Piece]],
   middles: List[Piece],
-  opens: Option[(SerieGroup, PairGroup)] = Some((List.empty[OpenSerie], List.empty[OpenPair])),
+  opener: Option[Opener],
   sign: Piece,
   variant: Variant) {
 
@@ -14,18 +14,7 @@ case class Table(
 
   lazy val okey: Piece = sign.up
 
-  lazy val actions: Map[Side, List[Action]] = Side.all map { side =>
-    side -> (Action.all filter {
-      case DrawMiddle => (!middles.isEmpty)
-      case DrawLeft => !discards(side.previous).isEmpty
-      case DiscardPiece => !boards(side).isEmpty
-      case OpenSeries => !boards(side).isEmpty
-      case OpenPairs => !boards(side).isEmpty
-      case _ => false
-    })
-  } toMap
-
-  def actionsOf(side: Side): List[Action] = actions(side)
+  def actorOf(player: Player): Actor = Actor(player, this)
 
   def seqTable(actions: Table => Valid[Table]*): Valid[Table] =
     actions.foldLeft(success(this): Valid[Table])(_ flatMap _)
@@ -57,36 +46,36 @@ case class Table(
   }) toValid "No piece on board " + piece
 
 
-  def openSeries(side: Side, pieces: List[List[Piece]]): Valid[Table] = (for {
-    b1 <- boards(side) take (pieces flatten)
-    (series, pairs) <- opens
-    os = pieces map (l => OpenSerie(side, l))
-    s1 = series ::: os
-  } yield {
-    copy(boards = boards.withSide(side, b1),
-      opens = Some((s1, pairs)))
-  }) toValid "No piece on board " + pieces
+  // def openSeries(side: Side, pieces: List[List[Piece]]): Valid[Table] = (for {
+  //   b1 <- boards(side) take (pieces flatten)
+  //   (series, pairs) <- opens
+  //   os = pieces map (l => OpenSerie(side, l))
+  //   s1 = series ::: os
+  // } yield {
+  //   copy(boards = boards.withSide(side, b1),
+  //     opens = Some((s1, pairs)))
+  // }) toValid "No piece on board " + pieces
 
 
-  def openPairs(side: Side, pieces: List[List[Piece]]): Valid[Table] = (for {
-    b1 <- boards(side) take (pieces flatten)
-    (series, pairs) <- opens
-    opairs = pieces map (l => OpenPair(side, l))
-    p1 = pairs ::: opairs
-  } yield {
-    copy(boards = boards.withSide(side, b1),
-      opens = Some((series, p1)))
-  }) toValid "No piece on board " + pieces
+  // def openPairs(side: Side, pieces: List[List[Piece]]): Valid[Table] = (for {
+  //   b1 <- boards(side) take (pieces flatten)
+  //   (series, pairs) <- opens
+  //   opairs = pieces map (l => OpenPair(side, l))
+  //   p1 = pairs ::: opairs
+  // } yield {
+  //   copy(boards = boards.withSide(side, b1),
+  //     opens = Some((series, p1)))
+  // }) toValid "No piece on board " + pieces
 
-  def collectOpen(side: Side): Valid[Table] = (for {
-    (series, pairs) <- opens
-    (sideSeries, s1) = series partition(_.by(side))
-    (sidePairs, p1) = pairs partition(_.by(side))
-    pieces = sideSeries.map(_.pieces) ::: sidePairs.map(_.pieces)
-    b1 <- boards(side) place pieces.flatten
-  } yield {
-    copy(boards = boards.withSide(side, b1), opens = Some((s1, p1)))
-  }) toValid "Cannot open on table"
+  // def collectOpen(side: Side): Valid[Table] = (for {
+  //   (series, pairs) <- opens
+  //   (sideSeries, s1) = series partition(_.by(side))
+  //   (sidePairs, p1) = pairs partition(_.by(side))
+  //   pieces = sideSeries.map(_.pieces) ::: sidePairs.map(_.pieces)
+  //   b1 <- boards(side) place pieces.flatten
+  // } yield {
+  //   copy(boards = boards.withSide(side, b1), opens = Some((s1, p1)))
+  // }) toValid "Cannot open on table"
 
   def leaveDrawn(side: Side, piece: Piece): Valid[Table] = {
     val dside = side.previous
@@ -107,6 +96,7 @@ object Table {
       boards = dealer.boards,
       middles = dealer.middles,
       sign = dealer.sign,
+      opener = Some(Opener empty),
       variant = variant
     )
   }

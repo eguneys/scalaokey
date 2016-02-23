@@ -22,9 +22,7 @@ package object okey
 
   type PieceMap = Map[Piece, Int]
 
-  type PieceGroup = List[List[Piece]]
-  type SerieGroup = List[OpenSerie]
-  type PairGroup = List[OpenPair]
+  type PieceGroups = List[List[Piece]]
 
   object implicitFailures {
     implicit def stringToFailures(str: String): Failures = scalaz.NonEmptyList(str)
