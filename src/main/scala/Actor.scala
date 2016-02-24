@@ -10,12 +10,14 @@ case class Actor(player: Player, table: Table) {
       None
     else
       (action match {
-        case a@OpenSeries(pieces) =>
-          move(a) { table.openSeries(side, pieces) }
-        case a@OpenPairs(pieces) =>
-          move(a) { table.openPairs(side, pieces) }
-        case a@CollectOpen =>
-          move(a) { table.collectOpen(side) }
+        case OpenSeries(pieces) =>
+          move(action) { table.openSeries(side, pieces) }
+        case OpenPairs(pieces) =>
+          move(action) { table.openPairs(side, pieces) }
+        case CollectOpen =>
+          move(action) { table.collectOpen(side) }
+        case Discard(piece) =>
+          move(action) { table.discard(side, piece) }
         case _ => None
       })
   }
@@ -39,7 +41,10 @@ case class Actor(player: Player, table: Table) {
 
   def afterDrawLeft: List[Action] = List(openSeries, openPairs, collectOpen, leaveTaken) flatten
 
-  def discard: Option[Action] = Discard.some
+  def discard: Option[Action] = table.opens(side) flatMap {
+    case Some(NewOpen(s, _, _)) if (s > 100) => Discard.some
+    case _ => None
+  }
 
   def openSeries: Option[Action] = (!hasOpenedPairs).option(OpenSeries)
   def openPairs: Option[Action] = (!hasOpenedSeries).option(OpenPairs)

@@ -82,6 +82,8 @@ case class Table(
     }) toValid "No piece on board " + piece
   }
 
+  def opens(side: Side) = opener map (_.opens(side))
+
   def hasOpenedSeries(side: Side): Boolean =  !(opener ?? { _.seriesOf(side) isEmpty })
 
   def hasOpenedPairs(side: Side): Boolean =  !(opener ?? { _.pairsOf(side) isEmpty })

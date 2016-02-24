@@ -61,7 +61,7 @@ Discard End
 Middle End
 When middle has no pieces left
 Discard End
-When a player board has no pieces left and player discards piece
+When a player board has no pieces left after player discards piece
 Player Turn End
 When a player discards piece
 
