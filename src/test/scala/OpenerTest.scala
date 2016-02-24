@@ -13,7 +13,7 @@ class OpenerTest extends OkeyTest {
   val pairs2 = List(R3.w, G2.w, G3.w) // 3
   val pairs3 = List(R5.w, G4.w, L13.w, B5.w) // 4
 
-  val oboard = Some(Board empty)
+  val board = Board empty
 
   "an opener" should {
     "be empty by default" in {
@@ -22,14 +22,14 @@ class OpenerTest extends OkeyTest {
     }
 
     "allow pieces to be opened series" in {
-      opener.openSeries(EastSide, series, oboard) must beSuccess.like {
+      opener.openSeries(EastSide, series, board) must beSome.like {
         case o =>
           o.series map(_.pieces) must_== series
       }
     }
 
     "allow pieces to be opened pairs" in {
-      opener.openPairs(EastSide, pairs, oboard) must beSuccess.like {
+      opener.openPairs(EastSide, pairs, board) must beSome.like {
         case o =>
           o.pairs map(_.pieces) must_== pairs
       }
@@ -38,27 +38,79 @@ class OpenerTest extends OkeyTest {
     "allow pieces to be opened consecutively" in {
 
       opener.seqOpener(
-        _.openSeries(EastSide, series, oboard),
-        _.openSeries(EastSide, series2),
-        _.openSeries(EastSide, series3)
-      ) must beSuccess.like {
+        _.openSeries(EastSide, series, board),
+        _.openSeries(EastSide, series2, board),
+        _.openSeries(EastSide, series3, board)
+      ) must beSome.like {
         case o =>
           o.series map(_.pieces) must_== series ::: series2 ::: series3
       }
 
       opener.seqOpener(
-        _.openPairs(EastSide, pairs, oboard),
-        _.openPairs(EastSide, pairs2),
-        _.openPairs(EastSide, pairs3)
-      ) must beSuccess.like {
+        _.openPairs(EastSide, pairs, board),
+        _.openPairs(EastSide, pairs2, board),
+        _.openPairs(EastSide, pairs3, board)
+      ) must beSome.like {
         case o =>
           o.pairs map(_.pieces) must_== pairs ::: pairs2 ::: pairs3
       }
     }
 
+    "allow opener to collect opened" in {
+      opener.seqOpener(
+        _.openSeries(EastSide, series, board),
+        _.collectOpen(EastSide)
+      ) must beSome.like {
+        case o =>
+          o must_== opener
+      }
+    }
+
+    "allow opener to collect concecutive opened" in {
+      opener.seqOpener(
+        _.openSeries(EastSide, series, board),
+        _.openSeries(EastSide, series2, board),
+        _.openSeries(EastSide, series3, board),
+        _.collectOpen(EastSide)
+      ) must beSome.like {
+        case o =>
+          o must_== opener
+      }
+    }
+
+    "not allow opener to collect opened after commit" in {
+      opener.seqOpener(
+        _.openSeries(EastSide, series, board),
+        _.commitOpen(EastSide),
+        _.collectOpen(EastSide)
+      ) must beNone
+    }
+
+    "save board" in {
+      opener.openSeries(EastSide, series, board) must beSome.like
+      { case o => o.boardSave(EastSide) must beSome }
+
+      opener.seqOpener(
+        _.openSeries(EastSide, series, board),
+        _.openSeries(EastSide, series, board)
+      ) must beSome.like { case o => o.boardSave(EastSide) must beSome }
+
+      opener.seqOpener(
+        _.openSeries(EastSide, series, board),
+        _.openSeries(EastSide, series, board),
+        _.collectOpen(EastSide)
+      ) must beSome.like { case o => o.boardSave(EastSide) must beNone }
+
+      opener.seqOpener(
+        _.openSeries(EastSide, series, board),
+        _.openSeries(EastSide, series, board),
+        _.commitOpen(EastSide)
+      ) must beSome.like { case o => o.boardSave(EastSide) must beNone }
+    }
+
     "score calculation" should {
       "open one series" in {
-        opener.openSeries(EastSide, series, oboard) must beSuccess.like {
+        opener.openSeries(EastSide, series, board) must beSome.like {
           case o =>
             o.score(EastSide) must beSome(48)
         }
@@ -66,17 +118,17 @@ class OpenerTest extends OkeyTest {
 
       "open more series" in {
         opener.seqOpener(
-          _.openSeries(EastSide, series, oboard),
-          _.openSeries(EastSide, series2),
-          _.openSeries(EastSide, series3)
-        ) must beSuccess.like {
+          _.openSeries(EastSide, series, board),
+          _.openSeries(EastSide, series2, board),
+          _.openSeries(EastSide, series3, board)
+        ) must beSome.like {
           case o =>
             o.score(EastSide) must beSome(48 + 51 + 58)
         }
       }
 
       "open one pairs" in {
-        opener.openPairs(EastSide, pairs, oboard) must beSuccess.like {
+        opener.openPairs(EastSide, pairs, board) must beSome.like {
           case o =>
             o.score(EastSide) must beSome(2)
         }
@@ -84,10 +136,10 @@ class OpenerTest extends OkeyTest {
 
       "open more pairs" in {
         opener.seqOpener(
-          _.openPairs(EastSide, pairs, oboard),
-          _.openPairs(EastSide, pairs2),
-          _.openPairs(EastSide, pairs3)
-        ) must beSuccess.like {
+          _.openPairs(EastSide, pairs, board),
+          _.openPairs(EastSide, pairs2, board),
+          _.openPairs(EastSide, pairs3, board)
+        ) must beSome.like {
           case o =>
             o.score(EastSide) must beSome(2 + 3 + 4)
         }
@@ -95,11 +147,11 @@ class OpenerTest extends OkeyTest {
 
       "open series after commit" in {
         opener.seqOpener(
-          _.openSeries(EastSide, series, oboard),
-          _.openSeries(EastSide, series2),
+          _.openSeries(EastSide, series, board),
+          _.openSeries(EastSide, series2, board),
           _.commitOpen(EastSide),
-          _.openSeries(EastSide, series3)
-        ) must beSuccess.like {
+          _.openSeries(EastSide, series3, board)
+        ) must beSome.like {
           case o =>
             o.score(EastSide) must beSome(48 + 51)
         }
@@ -107,11 +159,11 @@ class OpenerTest extends OkeyTest {
 
       "open pairs after commit" in {
         opener.seqOpener(
-          _.openPairs(EastSide, pairs, oboard),
-          _.openPairs(EastSide, pairs2),
+          _.openPairs(EastSide, pairs, board),
+          _.openPairs(EastSide, pairs2, board),
           _.commitOpen(EastSide),
-          _.openPairs(EastSide, pairs3)
-        ) must beSuccess.like {
+          _.openPairs(EastSide, pairs3, board)
+        ) must beSome.like {
           case o =>
             o.score(EastSide) must beSome(2 + 3)
         }

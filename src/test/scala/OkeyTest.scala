@@ -51,18 +51,18 @@ trait OkeyTest extends Specification
         List(south)
       ),
       middles = List.fill(18)(middle),
-      // opens = Some((List(
-      //   OpenSerie(EastSide, Piece.<>(10)),
-      //   OpenSerie(WestSide, Piece.<>(11)),
-      //   OpenSerie(NorthSide, Piece.<>(12)),
-      //   OpenSerie(SouthSide, Piece.<>(13))
-      // ), List(
-      //   OpenPair(EastSide, R10),
-      //   OpenPair(EastSide, L10),
-      //   OpenPair(EastSide, G10),
-      //   OpenPair(EastSide, B10)
-      // ))),
-      opener = Some(Opener empty),
+      opener = Some(Opener(List(
+        OpenSerie(EastSide, Piece.<>(10)),
+        OpenSerie(WestSide, Piece.<>(11)),
+        OpenSerie(NorthSide, Piece.<>(12)),
+        OpenSerie(SouthSide, Piece.<>(13))
+      ), List(
+        OpenPair(EastSide, R10),
+        OpenPair(EastSide, L10),
+        OpenPair(EastSide, G10),
+        OpenPair(EastSide, B10)
+      ),
+        Sides[Option[OpenState]])),
       sign = sign,
       variant = variant.Standard)
 
@@ -77,19 +77,19 @@ trait OkeyTest extends Specification
     l must_== pieces
   }
 
-  // def haveOpenPairs(pairs: List[Piece]*): Matcher[Table] = { t: Table =>
-  //   t.opens must beSome.like {
-  //     case (_, tablePairs) =>
-  //       (tablePairs map(_.pieces) flatten) must_== pairs.flatten
-  //   }
-  // }
+  def haveOpenPairs(pairs: List[Piece]*): Matcher[Table] = { t: Table =>
+    t.opener must beSome.like {
+      case opener =>
+        (opener.pairs map(_.pieces) flatten) must_== pairs.flatten
+    }
+  }
 
-  // def haveOpenSeries(series: List[Piece]*): Matcher[Table] = { t: Table =>
-  //   t.opens must beSome.like {
-  //     case (tableSeries, _) =>
-  //       (tableSeries.map(_.pieces).flatten) must_== series.flatten
-  //   }
-  // }
+  def haveOpenSeries(series: List[Piece]*): Matcher[Table] = { t: Table =>
+    t.opener must beSome.like {
+      case opener =>
+        (opener.series.map(_.pieces).flatten) must_== series.flatten
+    }
+  }
 
   def haveAllPieces: Matcher[Table] = { t: Table =>
     (t.sign :: t.middles ::: t.boards.fold(_.pieceList)) must contain(exactly(Piece.initial :_*))

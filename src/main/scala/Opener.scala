@@ -9,49 +9,57 @@ case class Opener(
 
   def score(side: Side): Option[Int] = opens(side) map(_.score)
 
-  def seqOpener(actions: Opener => Valid[Opener]*): Valid[Opener] =
-    actions.foldLeft(success(this): Valid[Opener])(_ flatMap _)
+  def boardSave(side: Side): Option[Board] = opens(side) match {
+    case Some(o: NewOpen) => Some(o.boardSave)
+    case _ => None
+  }
+
+  def seqOpener(actions: Opener => Option[Opener]*): Option[Opener] =
+    actions.foldLeft(Some(this): Option[Opener])(_ flatMap _)
 
 
   private def findScore(pieces: List[Piece]): Int =
     pieces.foldLeft(0) { _ + _.number }
 
-  def openSeries(side: Side, pieces: PieceGroups, board: Option[Board] = None): Valid[Opener] = {
+  def openSeries(side: Side, pieces: PieceGroups, board: Board): Option[Opener] = {
     val openState = opens(side) match {
-      case None => board map (b => OpenState.series(findScore(pieces flatten), b, this))
-      case Some(o: NewOpen) => Some(o.addScore(findScore(pieces flatten)))
-      case Some(o: OldOpen) => Some(o)
+      case None => OpenState(findScore(pieces flatten), board, this)
+      case Some(o: NewOpen) => o.addScore(findScore(pieces flatten))
+      case Some(o: OldOpen) => o
     }
 
-    openState.fold(
-      failure("Cannot open new with no board"): Valid[Opener]) { os =>
-      success(copy(
-        series = series ::: pieces.map { ps => OpenSerie(side, ps) },
-        opens = opens.withSide(side, Some(os))
-      ))
-    }
+    Some(copy(
+      series = series ::: pieces.map { ps => OpenSerie(side, ps) },
+      opens = opens.withSide(side, Some(openState))
+    ))
   }
 
-  def openPairs(side: Side, pieces: PieceGroups, board: Option[Board] = None): Valid[Opener] = {
+  def openPairs(side: Side, pieces: PieceGroups, board: Board): Option[Opener] = {
     val openState = opens(side) match {
-      case None => board map (b => OpenState.pairs(pieces.length, b, this))
-      case Some(o: NewOpen) => Some(o.addScore(pieces.length))
-      case Some(o: OldOpen) => Some(o)
+      case None => OpenState(pieces.length, board, this)
+      case Some(o: NewOpen) => o.addScore(pieces.length)
+      case Some(o: OldOpen) => o
     }
 
-    openState.fold(
-      failure("Cannot open new with no board"): Valid[Opener]) { os =>
-      success(copy(
-        pairs = pairs ::: pieces.map { ps => OpenPair(side, ps) },
-        opens = opens.withSide(side, Some(os))
-      ))
-    }
+    Some(copy(
+      pairs = pairs ::: pieces.map { ps => OpenPair(side, ps) },
+      opens = opens.withSide(side, Some(openState))
+    ))
   }
 
-  def commitOpen(side: Side): Valid[Opener] = opens(side) match {
-    case Some(a: NewOpen) => success(copy(opens = opens.withSide(side, Some(a.commit))))
-    case _ => failure("Cannot commit a non new open")
+  def commitOpen(side: Side): Option[Opener] = opens(side) match {
+    case Some(a: NewOpen) => Some(copy(opens = opens.withSide(side, Some(a.commit))))
+    case _ => None
   }
+
+  def collectOpen(side: Side): Option[Opener] = opens(side) match {
+    case Some(a: NewOpen) => Some(a.openerSave)
+    case _ => None
+  }
+
+  def withSeries(series: List[OpenSerie]) = copy(series = series)
+  def withPairs(pairs: List[OpenPair]) = copy(pairs = pairs)
+
 }
 
 object Opener {
