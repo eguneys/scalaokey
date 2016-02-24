@@ -3,33 +3,64 @@ package okey
 case class Actor(player: Player, table: Table) {
 
   import Function.const
+  import implicitFailures._
+
+  def toMove(action: Action): Option[Move] = {
+    if (!moves.contains(action.toSingle))
+      None
+    else
+      (action match {
+        case a@OpenSeries(pieces) =>
+          move(a) { table.openSeries(side, pieces) }
+        case a@OpenPairs(pieces) =>
+          move(a) { table.openPairs(side, pieces) }
+        case a@CollectOpen =>
+          move(a) { table.collectOpen(side) }
+        case _ => None
+      })
+  }
 
   lazy val moves: List[Action] = player.drawPiece fold(afterDraw, draw)
 
   def draw: List[Action] = List(drawMiddle, drawLeft) flatten
 
-  def drawMiddle: Option[Action] = table.drawMiddle(player.side).toOption map const(DrawMiddle)
-  def drawLeft: Option[Action] = table.drawLeft(player.side).toOption map const(DrawLeft)
+  def drawMiddle: Option[Action] = table.drawMiddle(side).toOption map const(DrawMiddle)
+  def drawLeft: Option[Action] = table.drawLeft(side).toOption map const(DrawLeft)
 
-  def afterDraw: List[Action] = table.boards(player.side).isEmpty.fold(
+  def afterDraw: List[Action] = player.discardPiece.isDefined.fold(
     Nil,
-    player.discardPiece.isDefined.fold(
-      Nil,
-      player.drawMiddle.fold(
-        afterDrawMiddle,
-        afterDrawLeft
-      )
+    player.drawMiddle.fold(
+      afterDrawMiddle,
+      afterDrawLeft
     )
   )
 
-  def afterDrawMiddle: List[Action] = List(discard, openSeries, openPairs) flatten
+  def afterDrawMiddle: List[Action] = List(discard, openSeries, openPairs, collectOpen) flatten
 
-  def afterDrawLeft: List[Action] = List(openSeries, openPairs, leaveTaken) flatten
+  def afterDrawLeft: List[Action] = List(openSeries, openPairs, collectOpen, leaveTaken) flatten
 
   def discard: Option[Action] = Discard.some
 
-  def openSeries: Option[Action] = OpenSeries.some
-  def openPairs: Option[Action] = OpenPairs.some
+  def openSeries: Option[Action] = (!hasOpenedPairs).option(OpenSeries)
+  def openPairs: Option[Action] = (!hasOpenedSeries).option(OpenPairs)
+
+  def collectOpen: Option[Action] = CollectOpen.some
 
   def leaveTaken: Option[Action] = LeaveTaken.some
+
+
+  lazy val side = player.side
+
+  lazy val hasOpenedPairs = table.hasOpenedPairs(side)
+  lazy val hasOpenedSeries = table.hasOpenedSeries(side)
+
+  private def move(action: Action)(vafter: Valid[Table]): Option[Move] = vafter map(move(action, _)) toOption
+
+  private def move(
+    action: Action,
+    after: Table) = Move(
+      player = player,
+      action = action,
+      before = table,
+      after = after)
 }

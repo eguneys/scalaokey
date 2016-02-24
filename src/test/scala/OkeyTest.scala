@@ -19,18 +19,22 @@ trait OkeyTest extends Specification
     def as(player: Player): Situation = Situation(Visual << str, player)
   }
 
-  // implicit def richGame(game: Game) = new {
-  //   def playMoves(moves: Action*): Valid[Game] = playMoveList(moves)
+  implicit def richGame(game: Game) = new {
+    def playMoves(side: Side, moves: Action*): Valid[Game] = playMoveList(side, moves)
 
-  //   def playMoveList(moves: Iterable[Action]): Valid[Game] = {
-  //     val vg = moves.foldLeft(V.success(game): Valid[Game]) { (vg, move) =>
-  //       vg flatMap { g => g(move) }
-  //     }
-  //     vg
-  //   }
-  // }
+    def playMoveList(side: Side, moves: Iterable[Action]): Valid[Game] = {
+      val vg = moves.foldLeft(V.success(game): Valid[Game]) { (vg, move) =>
+        vg flatMap { g => g(side, move) map (_._1) }
+      }
+      vg
+    }
+  }
 
-  def makeGame: Game = Game(makeTable)
+  def situationToGame(situation: Situation) = {
+    Game(situation.table, situation.player)
+  }
+
+  def makeGame: Game = Game(makeTable, Player(EastSide))
 
   def makeTable: Table = Table init okey.variant.Standard
 
@@ -101,7 +105,11 @@ trait OkeyTest extends Specification
     b.pieceList must contain(exactly(pieces:_*))
   }
 
+  def beGame(visual: String): Matcher[Valid[Game]] = beSuccess.like {
+    case g => g.table.visual must_== (Visual << visual).visual
+  }
+
   def bePoss(actions: Action*): Matcher[Situation] = { s: Situation =>
-    s.moves must contain(exactly(actions:_*))
+    s.actions must contain(exactly(actions:_*))
   }
 }

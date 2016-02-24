@@ -87,6 +87,7 @@ class OpenerTest extends OkeyTest {
     }
 
     "save board" in {
+
       opener.openSeries(EastSide, series, board) must beSome.like
       { case o => o.boardSave(EastSide) must beSome }
 
@@ -106,6 +107,8 @@ class OpenerTest extends OkeyTest {
         _.openSeries(EastSide, series, board),
         _.commitOpen(EastSide)
       ) must beSome.like { case o => o.boardSave(EastSide) must beNone }
+
+      opener.boardSave(EastSide) must beNone
     }
 
     "score calculation" should {

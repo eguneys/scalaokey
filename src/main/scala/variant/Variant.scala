@@ -9,8 +9,18 @@ abstract class Variant(
 
   def validMoves(situation: Situation): List[Action] = situation.actor.moves
 
-
   def end(situation: Situation): Boolean = false
+
+  def move(situation: Situation, side: Side, action: Action): Valid[Move] = {
+    def findMove(action: Action): Option[Move] = situation.toMove(action)
+
+    val actor = situation.actor
+    for {
+      //myActor <- actor.validIf(false, "Not my turn of " + side)
+      m1 <- findMove(action) toValid "Not a valid move " + action
+    } yield m1
+  }
+
 }
 
 case class Dealer(side: Side) {

@@ -96,7 +96,7 @@ object Visual {
   }
 
   def >>(table: Table): String = {
-    val boards = table.boards.map(_.pieceList mkString).fold(List(_)) mkString "\n"
+    val boards = table.boards.map(_.pieceList.sortWith(pieceSort) mkString).fold(List(_)) mkString "\n"
     val discards = table.discards.map(_ mkString).fold(List(_)) mkString "\n"
     val sign = table.sign.toString
     val middles = table.middles mkString
@@ -110,4 +110,8 @@ object Visual {
   }
 
   def addNewLines(str: String) = "\n" + str + "\n"
+
+  private def pieceSort(p1: Piece, p2: Piece) = {
+    p2.toString > p1.toString
+  }
 }

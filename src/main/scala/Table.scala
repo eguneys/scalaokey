@@ -69,7 +69,7 @@ case class Table(
     b1 <- o1.boardSave(side)
   } yield {
     copy(boards = boards.withSide(side, b1), opener = Some(o2))
-  }) toValid "Cannot open on table"
+  }) toValid "No opener on table"
 
   def leaveDrawn(side: Side, piece: Piece): Valid[Table] = {
     val dside = side.previous
@@ -81,6 +81,17 @@ case class Table(
         discards = discards.withSide(dside, d1))
     }) toValid "No piece on board " + piece
   }
+
+  def hasOpenedSeries(side: Side): Boolean =  !(opener ?? { _.seriesOf(side) isEmpty })
+
+  def hasOpenedPairs(side: Side): Boolean =  !(opener ?? { _.pairsOf(side) isEmpty })
+
+
+  def visual = format.Visual >> this
+
+  override def toString = List(
+    visual
+  ) mkString "\n"
 }
 
 object Table {

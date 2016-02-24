@@ -3,6 +3,8 @@ import ornicar.scalalib
 package object okey
 
     extends scalalib.Validation
+    with scalalib.OrnicarMonoid.Instances
+    with scalalib.OrnicarOption
 
     with scalalib.Zero.Syntax
     with scalalib.Zero.Instances
