@@ -12,9 +12,9 @@ case class Situation(table: Table, player: Player) {
 
   def middleEnd: Boolean = table.middles.isEmpty
 
-  def discardEnd: Boolean = table.boards(player.side).isEmpty && player.discardPiece.isDefined
+  def discardEnd: Boolean = table.boards(player.side).isEmpty
 
-  def turnEnd: Boolean = player.discardPiece.isDefined
+  def turnEnd: Boolean = false
 
   def move(side: Side, action: Action): Valid[Move] =
     table.variant.move(this, side, action)

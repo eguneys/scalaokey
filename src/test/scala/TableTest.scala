@@ -200,7 +200,7 @@ wg4g5g6
 r13
 
 g1g2g3
-""".leaveDrawn(EastSide, G1) must beSuccess.like {
+""".leaveTaken(EastSide, G1) must beSuccess.like {
           case t =>
             t.boards(EastSide) must havePieces(G2, G3)
             t.discards(SouthSide) must containPieces(G1)
@@ -287,7 +287,7 @@ r2r3r2
 r13
 
 r2r3r2
-""".leaveDrawn(EastSide, R1) must beFailure
+""".leaveTaken(EastSide, R1) must beFailure
       }
 
     }

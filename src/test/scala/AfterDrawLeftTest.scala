@@ -2,7 +2,7 @@ package okey
 
 class AfterDrawLeftTest extends OkeyTest {
   "after drawn left" in {
-    val player = Player(side = EastSide, drawLeft = true)
+    val player = Player(side = EastSide, drawLeft = Some(Piece.R1))
 
     "allow open and leave taken" in {
       ("""

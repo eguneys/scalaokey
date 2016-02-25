@@ -10,6 +10,17 @@ case class Actor(player: Player, table: Table) {
       None
     else
       (action match {
+        case DrawMiddle =>
+          move(action) { table.drawMiddle(side) }
+        case DrawLeft => {
+          table.toDrawLeft(side) flatMap { p =>
+            move(DrawLeft(p)) { table.drawLeft(side) }
+          }
+        }
+        case LeaveTaken =>
+          move(action) {
+            player.drawLeft toValid "Not drawn left" flatMap (table.leaveTaken(side, _))
+          }
         case OpenSeries(pieces) =>
           move(action) { table.openSeries(side, pieces) }
         case OpenPairs(pieces) =>
@@ -29,12 +40,9 @@ case class Actor(player: Player, table: Table) {
   def drawMiddle: Option[Action] = table.drawMiddle(side).toOption map const(DrawMiddle)
   def drawLeft: Option[Action] = table.drawLeft(side).toOption map const(DrawLeft)
 
-  def afterDraw: List[Action] = player.discardPiece.isDefined.fold(
-    Nil,
-    player.drawMiddle.fold(
-      afterDrawMiddle,
-      afterDrawLeft
-    )
+  def afterDraw: List[Action] = player.drawMiddle.fold(
+    afterDrawMiddle,
+    afterDrawLeft
   )
 
   def afterDrawMiddle: List[Action] = List(discardMiddle, openSeries, openPairs, collectOpen) flatten
@@ -70,6 +78,8 @@ case class Actor(player: Player, table: Table) {
 
   lazy val hasOpenedPairs = table.hasOpenedPairs(side)
   lazy val hasOpenedSeries = table.hasOpenedSeries(side)
+
+  def is(s: Side) = s == player.side
 
   private def move(action: Action)(vafter: Valid[Table]): Option[Move] = vafter map(move(action, _)) toOption
 

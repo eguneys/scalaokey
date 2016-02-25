@@ -10,7 +10,8 @@ case class Game(
 
   def apply(move: Move): Game = {
     val newGame = copy(
-      table = move.after
+      table = move.after,
+      player = player(move.action)
     )
     newGame
   }

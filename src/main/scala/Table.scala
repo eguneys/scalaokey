@@ -71,7 +71,7 @@ case class Table(
     copy(boards = boards.withSide(side, b1), opener = Some(o2))
   }) toValid "No opener on table"
 
-  def leaveDrawn(side: Side, piece: Piece): Valid[Table] = {
+  def leaveTaken(side: Side, piece: Piece): Valid[Table] = {
     val dside = side.previous
     (for {
       b1 <- boards(side) take piece
@@ -81,6 +81,8 @@ case class Table(
         discards = discards.withSide(dside, d1))
     }) toValid "No piece on board " + piece
   }
+
+  def toDrawLeft(side: Side): Option[Piece] = discards(side previous).headOption
 
   def opens(side: Side) = opener map (_.opens(side))
 

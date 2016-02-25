@@ -16,7 +16,7 @@ abstract class Variant(
 
     val actor = situation.actor
     for {
-      //myActor <- actor.validIf(false, "Not my turn of " + side)
+      myActor <- actor.validIf(actor is side, "Not my turn of " + side)
       m1 <- findMove(action) toValid "Not a valid move " + action
     } yield m1
   }

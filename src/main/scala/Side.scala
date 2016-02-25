@@ -3,25 +3,30 @@ package okey
 import ornicar.scalalib
 
 sealed trait Side {
+  val next: Side
   val previous: Side
   val letter: Char
 }
 
 case object EastSide extends Side {
+  val next = NorthSide
   val previous = SouthSide
   val letter = 'e'
 }
 case object WestSide extends Side {
+  val next = SouthSide
   val previous = NorthSide
   val letter = 'w'
 
 }
 case object NorthSide extends Side {
+  val next = WestSide
   val previous = EastSide
   val letter = 'n'
 
 }
 case object SouthSide extends Side {
+  val next = EastSide
   val previous = WestSide
   val letter = 's'
 }

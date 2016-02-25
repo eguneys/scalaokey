@@ -26,6 +26,10 @@ case object OpenPairs extends Action {
 case object CollectOpen extends Action
 case object LeaveTaken extends Action
 
+case class DrawLeft(piece: Piece) extends Action {
+  override def toSingle = DrawLeft
+}
+
 case class Discard(piece: Piece) extends Action {
   override def toSingle = Discard
 }

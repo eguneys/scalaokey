@@ -7,6 +7,7 @@ Turn player gets an extra piece
 
 
 * When player opens and has no board piece game, can end even if the score isn't enough, but hadn't processed
+* When player draws left, drawn piece must be used on opens
 
 #### Side
 
