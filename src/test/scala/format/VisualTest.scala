@@ -33,8 +33,8 @@ r1
 l1
 g1
 b1
-er10l10g10b10 wr11l11g11b11 nr12l12g12b12 sr13l13g13b13
-er10r10 el10l10 eg10g10 eb10b10
+er10l10g10b10 wr11l11g11b11 wr12l12g12b12
+sr10r10 sl10l10 sg10g10 sb10b10
 """
 
   val examples = Seq(newTableFormat,

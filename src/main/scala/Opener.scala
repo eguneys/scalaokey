@@ -7,7 +7,7 @@ case class Opener(
 
   import implicitFailures._
 
-  def score(side: Side): Option[Int] = opens(side) map(_.score)
+  def score(side: Side): Option[OpenScore] = opens(side) map(_.score)
 
   def boardSave(side: Side): Option[Board] = opens(side) match {
     case Some(o: NewOpen) => Some(o.boardSave)
@@ -23,7 +23,10 @@ case class Opener(
 
   def openSeries(side: Side, pieces: PieceGroups, board: Board): Option[Opener] = {
     val openState = opens(side) match {
-      case None => OpenState(findScore(pieces flatten), board, this)
+      case None => OpenState(
+        score = SerieScore(findScore(pieces flatten)),
+        boardSave = board,
+        openerSave = this)
       case Some(o: NewOpen) => o.addScore(findScore(pieces flatten))
       case Some(o: OldOpen) => o
     }
@@ -36,7 +39,10 @@ case class Opener(
 
   def openPairs(side: Side, pieces: PieceGroups, board: Board): Option[Opener] = {
     val openState = opens(side) match {
-      case None => OpenState(pieces.length, board, this)
+      case None => OpenState(
+        score = PairScore(pieces.length),
+        boardSave = board,
+        openerSave = this)
       case Some(o: NewOpen) => o.addScore(pieces.length)
       case Some(o: OldOpen) => o
     }

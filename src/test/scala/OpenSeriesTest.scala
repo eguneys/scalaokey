@@ -192,6 +192,45 @@ er10l10g10b10 er10l10g10b10 er6r5r4r3r2r1 er4l4g4b4
             OpenSeries(Piece.<>(4)),
             CollectOpen) must beFailure
         }
+
+        "not allow open pairs" in {
+          game playMoves(EastSide,
+            OpenPairs(R13.w)) must beFailure
+        }
+
+        "allow discard" in {
+          game playMoves(EastSide, Discard(R13)) must beGame("""
+r13
+
+r4l4g4b4r4r5r6r7r13
+
+
+
+r13
+
+
+
+er10l10g10b10 er10l10g10b10 er6r5r4r3r2r1
+""")
+        }
+
+        "allow discard even after below 101" in {
+          game playMoves(EastSide,
+            OpenSeries(Piece.<>(4)),
+              Discard(R13)) must beGame("""
+r13
+
+r4r5r6r7r13
+
+
+
+r13
+
+
+
+er10l10g10b10 er10l10g10b10 er6r5r4r3r2r1 er4l4g4b4
+""")
+        }
       }
     }
   }

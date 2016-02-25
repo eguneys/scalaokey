@@ -42,7 +42,9 @@ case class Actor(player: Player, table: Table) {
   def afterDrawLeft: List[Action] = List(openSeries, openPairs, collectOpen, leaveTaken) flatten
 
   def discard: Option[Action] = table.opens(side) flatMap {
-    case Some(NewOpen(s, _, _)) if (s > 100) => Discard.some
+    case Some(NewOpen(SerieScore(score), _, _)) if (score > 100) => Discard.some
+    case Some(NewOpen(PairScore(score), _, _)) if (score > 4) => Discard.some
+    case Some(_:OldOpen) => Discard.some
     case _ => None
   }
 

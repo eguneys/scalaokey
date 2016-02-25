@@ -88,7 +88,7 @@ object Visual {
           opener = Some(Opener(
             series = opens._1,
             pairs = opens._2,
-            Sides[Option[OpenState]])),
+            opens = findOpens(opens._1, opens._2))),
           variant = okey.variant.Standard
         )
       case _ => throw new Exception("Invalid visual format " + source)
@@ -110,6 +110,32 @@ object Visual {
   }
 
   def addNewLines(str: String) = "\n" + str + "\n"
+
+  private def findOpens(series: List[OpenSerie], pairs: List[OpenPair]): Sides[Option[OpenState]] = {
+
+    val scores: Map[Side, OpenScore] = List(EastSide, WestSide, NorthSide, SouthSide) flatMap { side =>
+
+      val pairScore = pairs.filter(_.owner == side).length
+
+      val serieScore = series.filter(_.owner == side).flatMap(_.pieces).foldLeft(0)(_ + _.number)
+
+      (serieScore, pairScore) match {
+        case (n, _) if n > 0 => Some(side -> SerieScore(n))
+        case (_, n) if n > 0 => Some(side -> PairScore(n))
+        case _ => None
+      }
+    } toMap
+
+    Sides[Option[OpenState]](
+      eastSide = makeOpen(EastSide, scores),
+      westSide = makeOpen(WestSide, scores),
+      northSide = makeOpen(NorthSide, scores),
+      southSide = makeOpen(SouthSide, scores))
+  }
+
+  private def makeOpen(side: Side, scoreMap: Map[Side, OpenScore]) = 
+    scoreMap.get(side) map (OldOpen.apply)
+
 
   private def pieceSort(p1: Piece, p2: Piece) = {
     p2.toString > p1.toString

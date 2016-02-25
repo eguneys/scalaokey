@@ -6,6 +6,8 @@ Each player gets 21 pieces
 Turn player gets an extra piece
 
 
+* When player has no board piece when opened game can end even if the score isn't enough
+
 #### Side
 
 East

@@ -115,7 +115,7 @@ class OpenerTest extends OkeyTest {
       "open one series" in {
         opener.openSeries(EastSide, series, board) must beSome.like {
           case o =>
-            o.score(EastSide) must beSome(48)
+            o.score(EastSide) must beSome(SerieScore(48))
         }
       }
 
@@ -126,14 +126,14 @@ class OpenerTest extends OkeyTest {
           _.openSeries(EastSide, series3, board)
         ) must beSome.like {
           case o =>
-            o.score(EastSide) must beSome(48 + 51 + 58)
+            o.score(EastSide) must beSome(SerieScore(48 + 51 + 58))
         }
       }
 
       "open one pairs" in {
         opener.openPairs(EastSide, pairs, board) must beSome.like {
           case o =>
-            o.score(EastSide) must beSome(2)
+            o.score(EastSide) must beSome(PairScore(2))
         }
       }
 
@@ -144,7 +144,7 @@ class OpenerTest extends OkeyTest {
           _.openPairs(EastSide, pairs3, board)
         ) must beSome.like {
           case o =>
-            o.score(EastSide) must beSome(2 + 3 + 4)
+            o.score(EastSide) must beSome(PairScore(2 + 3 + 4))
         }
       }
 
@@ -156,7 +156,7 @@ class OpenerTest extends OkeyTest {
           _.openSeries(EastSide, series3, board)
         ) must beSome.like {
           case o =>
-            o.score(EastSide) must beSome(48 + 51)
+            o.score(EastSide) must beSome(SerieScore(48 + 51))
         }
       }
 
@@ -168,7 +168,7 @@ class OpenerTest extends OkeyTest {
           _.openPairs(EastSide, pairs3, board)
         ) must beSome.like {
           case o =>
-            o.score(EastSide) must beSome(2 + 3)
+            o.score(EastSide) must beSome(PairScore(2 + 3))
         }
       }
     }

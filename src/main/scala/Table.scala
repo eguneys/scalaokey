@@ -84,9 +84,23 @@ case class Table(
 
   def opens(side: Side) = opener map (_.opens(side))
 
-  def hasOpenedSeries(side: Side): Boolean =  !(opener ?? { _.seriesOf(side) isEmpty })
+  // def hasOpenedSeries(side: Side): Boolean =  !(opener ?? { _.seriesOf(side) isEmpty })
 
-  def hasOpenedPairs(side: Side): Boolean =  !(opener ?? { _.pairsOf(side) isEmpty })
+  // def hasOpenedPairs(side: Side): Boolean =  !(opener ?? { _.pairsOf(side) isEmpty })
+
+  def hasOpenedSeries(side: Side): Boolean = opener ?? {
+    _.score(side) match {
+      case Some(_:SerieScore) => true
+      case _ => false
+    }
+  }
+
+  def hasOpenedPairs(side: Side): Boolean = opener ?? {
+    _.score(side) match {
+      case Some(_:PairScore) => true
+      case _ => false
+    }
+  }
 
 
   def visual = format.Visual >> this

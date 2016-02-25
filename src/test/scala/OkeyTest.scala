@@ -58,15 +58,18 @@ trait OkeyTest extends Specification
       opener = Some(Opener(List(
         OpenSerie(EastSide, Piece.<>(10)),
         OpenSerie(WestSide, Piece.<>(11)),
-        OpenSerie(NorthSide, Piece.<>(12)),
-        OpenSerie(SouthSide, Piece.<>(13))
+        OpenSerie(WestSide, Piece.<>(12))
       ), List(
-        OpenPair(EastSide, R10),
-        OpenPair(EastSide, L10),
-        OpenPair(EastSide, G10),
-        OpenPair(EastSide, B10)
+        OpenPair(SouthSide, R10),
+        OpenPair(SouthSide, L10),
+        OpenPair(SouthSide, G10),
+        OpenPair(SouthSide, B10)
       ),
-        Sides[Option[OpenState]])),
+        opens = Sides(
+          eastSide = OldOpen(SerieScore(40)).some,
+          westSide = OldOpen(SerieScore(44 + 48)).some,
+          southSide = OldOpen(PairScore(4)).some,
+          northSide = None))),
       sign = sign,
       variant = variant.Standard)
 
