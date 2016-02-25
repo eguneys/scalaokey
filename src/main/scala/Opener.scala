@@ -1,11 +1,25 @@
 package okey
 
+import Math.max
+
 case class Opener(
   series: List[OpenSerie],
   pairs: List[OpenPair],
   opens: Sides[Option[OpenState]]) {
 
   import implicitFailures._
+
+  lazy val maxOpenSerieScore: Option[Int] = opens.foldLeft(None: Option[Int]) {
+    case (None, Some(OldOpen(SerieScore(n)))) => Some(n)
+    case (Some(acc), Some(OldOpen(SerieScore(n)))) => Some(max(acc, n))
+    case (acc, _) => acc
+  }
+
+  lazy val maxOpenPairScore: Option[Int] = opens.foldLeft(None: Option[Int]) {
+    case (None, Some(OldOpen(PairScore(n)))) => Some(n)
+    case (Some(acc), Some(OldOpen(PairScore(n)))) => Some(max(acc, n))
+    case (acc, _) => acc
+  }
 
   def score(side: Side): Option[OpenScore] = opens(side) map(_.score)
 

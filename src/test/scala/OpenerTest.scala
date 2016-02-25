@@ -171,6 +171,35 @@ class OpenerTest extends OkeyTest {
             o.score(EastSide) must beSome(PairScore(2 + 3))
         }
       }
+
+      "max open scores" in {
+        val table = """
+r13
+
+
+
+
+
+
+
+
+
+er10l10g10b10 wr11l11g11b11 wr12l12g12b12 er13l13g13b13 er2r3r5
+sr10r10 wl10l10 sg10g10 sb10b10 wl10l10
+"""
+
+        "serie score" in {
+          table.opener must beSome.like {
+            case o => o.maxOpenSerieScore must beSome(44 + 48 + 10)
+          }
+        }
+
+        "pair score" in {
+          table.opener must beSome.like {
+            case o => o.maxOpenPairScore must beSome(3)
+          }
+        }
+      }
     }
   }
 }

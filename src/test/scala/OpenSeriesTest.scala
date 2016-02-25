@@ -132,12 +132,6 @@ er10l10g10b10 er10l10g10b10 er6r5r4r3r2r1
 """)
         }
 
-        "not allow open pairs after open series" in {
-          game playMoves(EastSide,
-            OpenSeries(Piece.<>(4)),
-            OpenPairs(R13.w)) must beFailure
-        }
-
         "not allow discard when open score below 101" in {
           val game = situationToGame("""
 r13
@@ -148,6 +142,12 @@ r10l10g10b10r10l10g10b10r2r3r4r5r6l13
           game playMoves(EastSide,
             OpenSeries(Piece.<>(10), Piece.<>(10), R6.<|(5)),
             Discard(L13)) must beFailure
+        }
+
+        "not allow open pairs after open series" in {
+          game playMoves(EastSide,
+            OpenSeries(Piece.<>(4)),
+            OpenPairs(R13.w)) must beFailure
         }
 
       }
@@ -230,6 +230,46 @@ r13
 
 er10l10g10b10 er10l10g10b10 er6r5r4r3r2r1 er4l4g4b4
 """)
+        }
+      }
+    }
+
+    "someone opened series" in {
+      val game = situationToGame("""
+r13
+
+r10l10g10b10r10l10g10b10r10l10g10b10r2r3r4r5r6r1l13l10
+
+
+
+
+
+
+
+wr10l10g10b10 wr10l10g10b10 wr10l10g10b10 wr6r5r4r3r2
+""" as player) // West Score = 140
+      "new open" in {
+        "allow discard when open score above 140" in {
+          game playMoves(EastSide,
+            OpenSeries(Piece.<>(10), Piece.<>(10), Piece.<>(10), R6.<|(6)),
+            Discard(L13)) must beGame("""
+r13
+
+l10
+
+
+
+l13
+
+
+
+wr10l10g10b10 wr10l10g10b10 wr10l10g10b10 wr6r5r4r3r2 er10l10g10b10 er10l10g10b10 er10l10g10b10 er6r5r4r3r2r1
+""")
+        }
+        "not allow discard when open score below 140" in {
+          game playMoves(EastSide,
+            OpenSeries(Piece.<>(10), Piece.<>(10), Piece.<>(10), R6.<|(5)),
+            Discard(L13)) must beFailure
         }
       }
     }

@@ -240,5 +240,49 @@ er1r1 er2r2 er3r3 er4r4 er5r5 er1r1
         }
       }
     }
+
+    "someone opened pairs" in {
+      val game = situationToGame("""
+r13
+
+r1r2r3r4r5r6r7r1r2r3r4r5r6r7l13l10
+
+
+
+
+
+
+
+
+wr1r1 wr2r2 wr3r3 wr4r4 wr5r5 wr6r6
+""" as player) // West Score = 6
+
+      "new open" in {
+        "allow discard when open score above 6" in {
+          game playMoves(EastSide,
+            OpenPairs(R1.w, R2.w, R3.w, R4.w, R5.w, R6.w, R7.w),
+            Discard(L13)) must beGame("""
+r13
+
+l10
+
+
+
+l13
+
+
+
+
+wr1r1 wr2r2 wr3r3 wr4r4 wr5r5 wr6r6 er1r1 er2r2 er3r3 er4r4 er5r5 er6r6 er7r7
+""")
+        }
+
+        "not allow discard when open score below 6" in {
+          game playMoves(EastSide,
+            OpenPairs(R1.w, R2.w, R3.w, R4.w, R5.w, R6.w),
+            Discard(L13)) must beFailure
+        }
+      }
+    }
   }
 }

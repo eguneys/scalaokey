@@ -60,6 +60,9 @@ case class Sides[A](
     case SouthSide => copy(southSide = a)
   }
 
+  def foldLeft[B](b: B)(op: (B, A) => B): B =
+    op(op(op(op(b, eastSide), westSide), northSide), southSide)
+
   def fold[B: Semigroup](op: A => B): B =
     op(eastSide) |+| op(westSide) |+| op(northSide) |+| op(southSide)
 
