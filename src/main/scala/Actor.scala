@@ -37,21 +37,28 @@ case class Actor(player: Player, table: Table) {
     )
   )
 
-  def afterDrawMiddle: List[Action] = List(discard, openSeries, openPairs, collectOpen) flatten
+  def afterDrawMiddle: List[Action] = List(discardMiddle, openSeries, openPairs, collectOpen) flatten
 
-  def afterDrawLeft: List[Action] = List(openSeries, openPairs, collectOpen, leaveTaken) flatten
+  def afterDrawLeft: List[Action] = List(discardLeft, openSeries, openPairs, collectOpen, leaveTaken) flatten
 
-  def discard: Option[Action] = table.opens(side) flatMap {
+  def discardLeft: Option[Action] = discard(true)
+  def discardMiddle: Option[Action] = discard(false)
+
+  def discard(withLeft: Boolean): Option[Action] = table.opens(side) flatMap {
     case Some(NewOpen(SerieScore(score), _, _)) if (score > minValidOpenSeriesScore) => Discard.some
     case Some(NewOpen(PairScore(score), _, _)) if (score > minValidOpenPairsScore) => Discard.some
     case Some(_:OldOpen) => Discard.some
+    case None => withLeft.fold(None, Discard.some)
     case _ => None
   }
 
   def openSeries: Option[Action] = (!hasOpenedPairs).option(OpenSeries)
   def openPairs: Option[Action] = (!hasOpenedSeries).option(OpenPairs)
 
-  def collectOpen: Option[Action] = CollectOpen.some
+  def collectOpen: Option[Action] = table.opens(side) flatMap {
+    case Some(_:NewOpen)=> CollectOpen.some
+    case _ => None
+  }
 
   def leaveTaken: Option[Action] = LeaveTaken.some
 

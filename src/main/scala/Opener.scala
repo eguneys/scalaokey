@@ -77,9 +77,6 @@ case class Opener(
     case _ => None
   }
 
-  def seriesOf(side: Side): List[OpenSerie] = series filter (_.owner == side)
-  def pairsOf(side: Side): List[OpenPair] = pairs filter (_.owner == side)
-
   def withSeries(series: List[OpenSerie]) = copy(series = series)
   def withPairs(pairs: List[OpenPair]) = copy(pairs = pairs)
 

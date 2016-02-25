@@ -6,7 +6,7 @@ Each player gets 21 pieces
 Turn player gets an extra piece
 
 
-* When player has no board piece when opened game can end even if the score isn't enough
+* When player opens and has no board piece game, can end even if the score isn't enough, but hadn't processed
 
 #### Side
 

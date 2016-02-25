@@ -11,5 +11,21 @@ r2
 r1
 """ as player) must bePoss(OpenSeries, OpenPairs, LeaveTaken)
     }
+
+    "allow discard on old open" in {
+      ("""
+r13
+r2
+r1
+
+
+
+
+
+
+
+er1r2r3
+""" as player) must bePoss(Discard, OpenSeries, LeaveTaken)
+    }
   }
 }
