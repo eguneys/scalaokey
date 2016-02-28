@@ -32,6 +32,14 @@ case object SouthSide extends Side {
 }
 
 object Side {
+
+  def apply(n: Int): Side = n % 4 match {
+    case 0 => EastSide
+    case 1 => WestSide
+    case 2 => NorthSide
+    case 3 => SouthSide
+  }
+
   def apply(c: Char): Side = c match {
     case 'e' => EastSide
     case 'w' => WestSide

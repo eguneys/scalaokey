@@ -50,5 +50,5 @@ case class Dealer(side: Side) {
 }
 
 object Variant {
-
+  val default = Standard
 }
