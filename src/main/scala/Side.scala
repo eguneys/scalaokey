@@ -73,6 +73,8 @@ case class Sides[A](
     case SouthSide => copy(southSide = a)
   }
 
+  lazy val toList: List[A] = List(eastSide, westSide, northSide, southSide)
+
   def foldLeft[B](b: B)(op: (B, A) => B): B =
     op(op(op(op(b, eastSide), westSide), northSide), southSide)
 
@@ -81,6 +83,12 @@ case class Sides[A](
 
   def map[B](op: A => B): Sides[B] =
     Sides(op(eastSide), op(westSide), op(northSide), op(southSide))
+
+  def sideMap[B](op: (Side, A) => B): Sides[B] =
+    Sides(op(EastSide, eastSide),
+      op(WestSide, westSide),
+      op(NorthSide, northSide),
+      op(SouthSide, southSide))
 }
 
 object Sides {
