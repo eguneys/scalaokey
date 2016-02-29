@@ -2,7 +2,8 @@ package okey
 
 case class Game(
   table: Table,
-  player: Player) {
+  player: Player,
+  turns: Int = 0) {
 
   def apply(side: Side, action: Action): Valid[(Game, Move)] = situation.move(side, action) map { move =>
     apply(move) -> move

@@ -83,3 +83,12 @@ Available moves
   - Open series
   - Open pairs
   - Leave taken
+
+
+### FEN
+
+specific for side
+
+middle = middleCount + gosterge
+
+board/discards/series/pairs/middle
