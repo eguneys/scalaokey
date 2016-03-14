@@ -22,6 +22,11 @@ package object okey
   val Blue = Color.Blue
   val Fake = Color.Fake
 
+  val EastSide = Side.EastSide
+  val WestSide = Side.WestSide
+  val NorthSide = Side.NorthSide
+  val SouthSide = Side.SouthSide
+
   type PieceMap = Map[Piece, Int]
 
   type PieceGroups = List[List[Piece]]

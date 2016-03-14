@@ -99,7 +99,7 @@ trait OkeyTest extends Specification
   }
 
   def haveAllPieces: Matcher[Table] = { t: Table =>
-    (t.sign :: t.middles ::: t.boards.fold(_.pieceList)) must contain(exactly(Piece.initial :_*))
+    (t.sign :: t.middles ::: t.boards.map(_.pieceList).toList.flatten) must contain(exactly(Piece.initial :_*))
   }
 
   def havePieces(pieces: Piece*): Matcher[Board] = havePieces(pieces toList)

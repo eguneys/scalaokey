@@ -96,8 +96,8 @@ object Visual {
   }
 
   def >>(table: Table): String = {
-    val boards = table.boards.map(_.pieceList.sortWith(pieceSort) mkString).fold(List(_)) mkString "\n"
-    val discards = table.discards.map(_ mkString).fold(List(_)) mkString "\n"
+    val boards = table.boards.map(_.pieceList.sortWith(pieceSort) mkString) mkString "\n"
+    val discards = table.discards.map(_ mkString) mkString "\n"
     val sign = table.sign.toString
     val middles = table.middles mkString
 
