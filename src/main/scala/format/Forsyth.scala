@@ -3,8 +3,14 @@ package format
 
 object Forsyth {
 
+
+
   def >>(game: Game, side: Side): String = {
     val table = game.table
+    exportTable(table, side)
+  }
+
+  def exportTable(table: Table, side: Side): String = {
     List(
       table.boards(side).pieceList mkString,
       (table.discards map (_.mkString)).toList.mkString(" "),

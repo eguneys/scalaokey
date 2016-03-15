@@ -13,10 +13,17 @@ case class Piece(color: Color, number: Int) {
   def <|(stop: Int): List[Piece] = Range(number, max(0, number - stop), -1) map(Piece(color, _)) toList
 
 
-  override def toString = color.letter + number.toString
+  val sColor = color.letter.toString
+  val sNumber = number.toString
+
+  val key = sColor + sNumber
+
+  override def toString = key
 }
 
 object Piece {
+
+  def byKey(key: String): Option[Piece] = allKeys get key
 
   def <>(number: Int): List[Piece] = Color.all map(_ - number)
 
@@ -77,4 +84,6 @@ object Piece {
   val all = List(R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, L1, L2, L3, L4, L5, L6, L7, L8, L9, L10, L11, L12, L13, G1, G2, G3, G4, G5, G6, G7, G8, G9, G10, G11, G12, G13, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, F1)
 
   val initial = all ::: all
+
+  val allKeys: Map[String, Piece] = all map { pos => pos.key -> pos } toMap
 }

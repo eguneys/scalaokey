@@ -52,7 +52,7 @@ case class Actor(player: Player, table: Table) {
   def discardLeft: Option[Action] = discard(true)
   def discardMiddle: Option[Action] = discard(false)
 
-  def discard(withLeft: Boolean): Option[Action] = table.opens(side) flatMap {
+  def discard(withLeft: Boolean): Option[Action] = table.opens(side) match {
     case Some(NewOpen(SerieScore(score), _, _)) if (score > minValidOpenSeriesScore) => Discard.some
     case Some(NewOpen(PairScore(score), _, _)) if (score > minValidOpenPairsScore) => Discard.some
     case Some(_:OldOpen) => Discard.some
@@ -63,7 +63,7 @@ case class Actor(player: Player, table: Table) {
   def openSeries: Option[Action] = (!hasOpenedPairs).option(OpenSeries)
   def openPairs: Option[Action] = (!hasOpenedSeries).option(OpenPairs)
 
-  def collectOpen: Option[Action] = table.opens(side) flatMap {
+  def collectOpen: Option[Action] = table.opens(side) match {
     case Some(_:NewOpen)=> CollectOpen.some
     case _ => None
   }

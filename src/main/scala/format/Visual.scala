@@ -45,7 +45,7 @@ object Visual {
 
     val pieces = parsePieces(str.tail)
 
-    (side, pieces)
+    (side getOrElse EastSide, pieces)
   }
 
   def parsePieces(str: String): List[Piece] = {

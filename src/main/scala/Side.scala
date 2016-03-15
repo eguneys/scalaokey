@@ -42,19 +42,20 @@ object Side {
 
   def apply(n: Int): Side = n % 4 match {
     case 0 => EastSide
-    case 1 => WestSide
-    case 2 => NorthSide
+    case 1 => NorthSide
+    case 2 => WestSide
     case 3 => SouthSide
   }
 
-  def apply(c: String): Side = c match {
-    case "e" | "east" => EastSide
-    case "w" | "west" => WestSide
-    case "n" | "north" => NorthSide
-    case "s" | "south" => SouthSide
+  def apply(c: String): Option[Side] = c match {
+    case "e" | "east" => EastSide.some
+    case "w" | "west" => WestSide.some
+    case "n" | "north" => NorthSide.some
+    case "s" | "south" => SouthSide.some
+    case _ => None
   }
 
-  def apply(s: Char): Side = apply(s.toString)
+  def apply(s: Char): Option[Side] = apply(s.toString)
 
   lazy val all: List[Side] = List(EastSide, WestSide, NorthSide, SouthSide)
 }
@@ -100,6 +101,8 @@ case class Sides[A](
       op(WestSide, westSide),
       op(NorthSide, northSide),
       op(SouthSide, southSide))
+
+  def mapt[B](op: A => B): Sides[B] = this.map(op): Sides[B]
 }
 
 object Sides {

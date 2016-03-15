@@ -84,7 +84,7 @@ case class Table(
 
   def toDrawLeft(side: Side): Option[Piece] = discards(side previous).headOption
 
-  def opens(side: Side) = opener map (_.opens(side))
+  def opens(side: Side): Option[OpenState] = opener flatMap (_.opens(side))
 
   // def hasOpenedSeries(side: Side): Boolean =  !(opener ?? { _.seriesOf(side) isEmpty })
 
