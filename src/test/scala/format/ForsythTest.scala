@@ -28,10 +28,10 @@ class ForsythTest extends OkeyTest {
     val rest = List(discards, series, pairs, middle) mkString "/"
 
     "opening" in {
-      f >> (game, EastSide) must_== east + "/" + rest
-      f >> (game, WestSide) must_== west + "/" + rest
-      f >> (game, NorthSide) must_== north + "/" + rest
-      f >> (game, SouthSide) must_== south + "/" + rest
+      f >> (game, EastSide) must_== east + "/" + rest + "/e"
+      f >> (game, WestSide) must_== west + "/" + rest + "/w"
+      f >> (game, NorthSide) must_== north + "/" + rest + "/n"
+      f >> (game, SouthSide) must_== south + "/" + rest + "/s"
     }
 
     "one discard" in {
@@ -40,8 +40,45 @@ class ForsythTest extends OkeyTest {
       val middle = "17r5"
 
       game.playMoves(EastSide, DrawMiddle, Discard(R1)) must beSuccess.like {
-        case g => f >> (g, EastSide) must_== (List(east, discards, series, pairs, middle) mkString "/")
+        case g => f >> (g, EastSide) must_== (List(east, discards, series, pairs, middle, "e") mkString "/")
       }
+    }
+  }
+
+  "discards" should {
+
+    "no discard" in {
+      val table = """
+r1
+r1r2r3
+"""
+
+      f.exportTable(table, EastSide) must_== "/   ///3r1/e"
+    }
+
+    "one discard" in {
+      val table = """
+r1
+r1r2r3
+
+
+
+
+r1
+"""
+
+      f.exportTable(table, EastSide) must_== "/r1   ///3r1/e"
+
+      f.exportTable("""
+r1
+r1r2r3
+
+
+
+
+
+r1r2
+""", EastSide) must_== "/ r1r2  ///3r1/e"
     }
   }
 }

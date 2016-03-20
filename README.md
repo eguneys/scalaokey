@@ -85,6 +85,16 @@ Available moves
   - Leave taken
 
 
+#### Move
+
+Draw Middle (piece)
+Discard (piece)
+Draw Left
+Leave taken
+open series (piece groups)
+collect open
+process (piece)
+
 ### FEN
 
 specific for side

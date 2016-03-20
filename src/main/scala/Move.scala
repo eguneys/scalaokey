@@ -15,21 +15,23 @@ sealed trait Action {
 
   def withPiece(piece: Piece): Action = this
 
-  val key: String
+  def withPieceGroup(group: PieceGroups): Action = this
+
+  val key: String = toSingle.key
 }
 
 case object DrawLeft extends Action {
-  val key = "dl"
+  override val key = "dl"
 
   override def withPiece(piece: Piece) = DrawLeft(piece)
 }
 
 case object DrawMiddle extends Action {
-  val key = "dm"
+  override val key = "dm"
 }
 
 case object Discard extends Action {
-  val key = "dd"
+  override val key = "dd"
 
   override def withPiece(piece: Piece) = Discard(piece)
 }
@@ -37,42 +39,42 @@ case object Discard extends Action {
 case object OpenSeries extends Action {
   def apply(pieces: List[Piece]*): OpenSeries = OpenSeries(pieces toList)
 
-  val key = "os"
+  override val key = "os"
+
+  override def withPieceGroup(group: PieceGroups) = OpenSeries(group)
 }
 case object OpenPairs extends Action {
   def apply(pieces: List[Piece]*): OpenPairs = OpenPairs(pieces toList)
 
-  val key = "op"
+  override val key = "op"
+
+  override def withPieceGroup(group: PieceGroups) = OpenPairs(group)
 }
 case object CollectOpen extends Action {
-  val key = "co"
+  override val key = "co"
 }
 
 case object LeaveTaken extends Action {
-  val key = "lt"
+  override val key = "lt"
+}
+
+case class DrawMiddle(piece: Piece) extends Action {
+  override def toSingle = DrawMiddle
 }
 
 case class DrawLeft(piece: Piece) extends Action {
   override def toSingle = DrawLeft
-
-  val key = toSingle.key
 }
 
 case class Discard(piece: Piece) extends Action {
   override def toSingle = Discard
-
-  val key = toSingle.key
 }
 
 case class OpenSeries(pieces: PieceGroups) extends Action {
   override def toSingle = OpenSeries
-
-  val key = toSingle.key
 }
 case class OpenPairs(pieces: PieceGroups) extends Action {
   override def toSingle = OpenPairs
-
-  val key = toSingle.key
 }
 
 object Action {

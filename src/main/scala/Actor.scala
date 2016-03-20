@@ -11,7 +11,9 @@ case class Actor(player: Player, table: Table) {
     else
       (action match {
         case DrawMiddle =>
-          move(action) { table.drawMiddle(side) }
+          table.toDrawMiddle(side) flatMap { p =>
+            move(DrawMiddle(p)) { table.drawMiddle(side) }
+          }
         case DrawLeft => {
           table.toDrawLeft(side) flatMap { p =>
             move(DrawLeft(p)) { table.drawLeft(side) }

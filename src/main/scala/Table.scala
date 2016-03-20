@@ -82,6 +82,8 @@ case class Table(
     }) toValid "No piece on board " + piece
   }
 
+  def toDrawMiddle(side: Side): Option[Piece] = middles.headOption
+
   def toDrawLeft(side: Side): Option[Piece] = discards(side previous).headOption
 
   def opens(side: Side): Option[OpenState] = opener flatMap (_.opens(side))
