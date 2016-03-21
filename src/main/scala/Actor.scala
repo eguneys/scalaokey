@@ -28,7 +28,9 @@ case class Actor(player: Player, table: Table) {
         case OpenPairs(pieces) =>
           move(action) { table.openPairs(side, pieces) }
         case CollectOpen =>
-          move(action) { table.collectOpen(side) }
+          table.toCollectOpen(side) flatMap { save =>
+            move(CollectOpen(save)) { table.collectOpen(side) }
+          }
         case Discard(piece) =>
           move(action) { table.discard(side, piece) }
         case _ => None

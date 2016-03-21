@@ -28,6 +28,12 @@ case class Opener(
     case _ => None
   }
 
+  def getSave: Option[(Board, Opener)] = opens.foldLeft(None: Option[(Board, Opener)]) {
+    case (Some(a), _) => Some(a)
+    case (_, Some(o: NewOpen)) => Some((o.boardSave, o.openerSave))
+    case _ => None
+  }
+
   def seqOpener(actions: Opener => Option[Opener]*): Option[Opener] =
     actions.foldLeft(Some(this): Option[Opener])(_ flatMap _)
 

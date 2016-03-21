@@ -77,6 +77,11 @@ case class OpenPairs(pieces: PieceGroups) extends Action {
   override def toSingle = OpenPairs
 }
 
+case class CollectOpen(save: (Board, Opener)) extends Action {
+  override def toSingle = CollectOpen
+}
+
+
 object Action {
   lazy val all: List[Action] = List(DrawLeft, DrawMiddle, Discard, OpenSeries, OpenPairs, CollectOpen, LeaveTaken)
 

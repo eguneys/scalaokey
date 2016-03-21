@@ -20,4 +20,7 @@ object Forsyth {
       side.letter
     )
   } mkString "/"
+
+  def exportGroups(groups: PieceGroups): String =
+    groups map(_.mkString) mkString(" ")
 }
