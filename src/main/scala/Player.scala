@@ -13,7 +13,7 @@ case class Player(side: Side,
     case _ => this
   }
 
-  lazy val nextPlayer: Player = Player(side.next)
+  lazy val nextPlayer: Player = Player(side.next).withHistory(history)
 
   lazy val drawPiece: Boolean = drawLeft.isDefined || drawMiddle
 

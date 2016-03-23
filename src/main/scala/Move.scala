@@ -9,9 +9,13 @@ case class Move(
   def finalizeAfter: Table = {
     val table = after
 
-    table.variant.finalizeTable(table, player, action)
+    val t1 = table.variant.finalizeTable(table, player, action)
 
     // commit open
+    action match {
+      case Discard(_) => t1.updateOpener(o => o.commitOpen(player.side) getOrElse o)
+      case _ => t1
+    }
   }
 
   def finalizePlayer: Player = {

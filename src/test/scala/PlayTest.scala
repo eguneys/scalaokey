@@ -74,5 +74,10 @@ l2
         }
       }
     }
+
+    // "calculate scores" in {
+    //   http://hakkarim.net/34oyunu/kurallar.htm#1
+    // }
+
   }
 }

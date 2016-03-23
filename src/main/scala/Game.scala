@@ -20,6 +20,7 @@ case class Game(
       player = move.finalizePlayer,
       turns = newTurns
     )
+
     newGame
   }
 

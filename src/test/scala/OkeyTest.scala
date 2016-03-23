@@ -115,4 +115,12 @@ trait OkeyTest extends Specification
   def bePoss(actions: Action*): Matcher[Situation] = { s: Situation =>
     s.actions must contain(exactly(actions:_*))
   }
+
+  def haveLastMoves(actions: Action*): Matcher[Valid[Game]] = beSuccess.like {
+    case g => g.player.history.lastMoves must contain(exactly(actions :_*))
+  }
+
+  def haveOpenStates(states: Sides[Option[Opens]]): Matcher[Valid[Game]] = beSuccess.like {
+    case g => g.player.history.openStates must_== states
+  }
 }

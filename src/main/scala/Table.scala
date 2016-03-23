@@ -109,6 +109,7 @@ case class Table(
     }
   }
 
+  def updateOpener(f: Opener => Opener) = copy(opener = opener map f)
 
   def visual = format.Visual >> this
 

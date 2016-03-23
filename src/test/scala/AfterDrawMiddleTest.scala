@@ -33,6 +33,6 @@ er1r2r3
 r13
 r2
 """ as player) must bePoss()
-    }
+    }.pendingUntilFixed
   }
 }
