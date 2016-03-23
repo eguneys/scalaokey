@@ -5,6 +5,10 @@ import Math.{ min, max }
 case class Board(pieces: PieceMap) {
   def apply(piece: Piece): Int = pieces getOrElse(piece, 0)
 
+  def exists(piece: Piece): Boolean = apply(piece) > 0
+
+  def handSum: Int = pieceList.foldLeft(0) ( _ + _.number)
+
   def place(piece: Piece): Option[Board] = apply(piece) match {
     case n => Some(copy(pieces = pieces + (piece -> (n + 1))))
   }

@@ -7,13 +7,23 @@ case object Standard extends Variant(
   id = 1,
   name = "Standard") {
 
-  val scoringSystem = ScoringSystem
+  val scoringSystem = StandardScoringSystem
 
   override def finalizeTable(table: Table, player: Player, action: Action): Table = table
 }
 
-object ScoringSystem extends AbstractScoringSystem {
+object StandardScoringSystem extends AbstractScoringSystem {
 
-  def scorer(flag: Flag): FlagScore = ???
+  import AbstractScoringSystem._
+
+  def scorer(flag: Flag): FlagScore = flag match {
+    case EndByHand => Double(EndByHand)
+    case EndByPair => Double(EndByPair)
+    case EndByDiscardOkey => Double(EndByDiscardOkey)
+    case HandZero => Adder(-101, HandZero)
+    case HandOkey => Adder(101, HandOkey)
+    case HandOpenPair => Double(HandOpenPair)
+    case HandOpenNone => Adder(101, HandOpenNone)
+  }
 
 }

@@ -22,15 +22,15 @@ case class Situation(table: Table, player: Player) {
 
   def middleEnd: Boolean = table.middles.isEmpty
 
+  def normalEnd: Boolean = lastDiscard.isDefined && table.boards(lastSide).isEmpty
+
   def handEnd: Boolean = normalEnd && lastSideOpens.exists (!_.old) && opensSize == 1
 
   def pairEnd: Boolean = normalEnd && lastSideOpens.exists (_.pairs)
 
   def okeyEnd: Boolean = normalEnd && lastDiscard.exists (_ == okey)
 
-  def normalEnd: Boolean = lastDiscard.isDefined && table.boards(lastSide).isEmpty
-
-  def end: Boolean = false
+  def end: Boolean = middleEnd || normalEnd
 
   def endScores: Option[Sides[EndScoreSheet]] = table.variant.endScores(this)
 
