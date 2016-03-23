@@ -7,9 +7,31 @@ class SituationTest extends OkeyTest {
   "a game" should {
 
     "detect end" should {
+      // previous player is east
+      val player = Player(side = NorthSide, drawMiddle = true)
+
+      val emptyHistory = History()
+      val discardHistory = History(DrawMiddle, Discard(G1))
+
+      val emptyOpens = Sides[Option[Opens]]
+
+      def makeOpens(from: Sides[Option[Opens]], side: Side, pairs: Boolean, old: Boolean) = from.withSide(side, Opens(pairs, old).some)
+
+      def eastOpens(from: Sides[Option[Opens]] = emptyOpens, old: Boolean, pairs: Boolean) = makeOpens(from, EastSide, old = old, pairs = pairs)
+
+      val emptyEastSituation = ("""
+r13
+r1r2
+""" as player)
+
+      val fullEastSituation = ("""
+r13
+r1r2
+r1
+""" as player)
+
       "by middle" in {
-        val player = Player(EastSide)
-          ("""
+        ("""
 r13
 """ as player).middleEnd must beTrue
 
@@ -19,39 +41,152 @@ r1
 """ as player).middleEnd must beFalse
       }
 
-      "by discard left" in {
-
-        "when player board has no pieces" in {
-          val player = Player(side = EastSide)
-            ("""
-r13
-""" as player).discardEnd must beTrue
+      "by normal" in {
+        "no discard" in {
+          emptyEastSituation.normalEnd must beFalse
+          fullEastSituation.normalEnd must beFalse
         }
 
-        "when player board has pieces" in {
-          val player = Player(side = EastSide)
-            ("""
-r13
+        "with discard" in {
+          "if player board has no pieces" in {
+            emptyEastSituation.withHistory(discardHistory).normalEnd must beTrue
+          }
 
-r1
-""" as player).discardEnd must beFalse
+          "if player board has pieces" in {
+            fullEastSituation.normalEnd must beFalse
+          }
         }
       }
-    }
 
-    "detect turn end" should {
-      "when player discards piece" in {
-        val player = Player(side = EastSide)
-          ("""
+      "by discard okey" in {
+        val situationR13 = ("""
 r13
-""" as player).turnEnd must beTrue
+r1r2
+""" as player)
+        "with discard with other piece" in {
+          val history = History(DrawMiddle, Discard(G1))
+          situationR13.withHistory(history).okeyEnd must beFalse
+        }
+
+        "with discard with sign piece" in {
+          val history = History(DrawMiddle, Discard(R13))
+          situationR13.withHistory(history).okeyEnd must beFalse
+        }
+
+        "with discard with okey piece" in {
+          val history = History(DrawMiddle, Discard(R1))
+          situationR13.withHistory(history).okeyEnd must beTrue
+        }
       }
 
-      "when player hasn't discarded piece" in {
-        val player = Player(side = EastSide)
-          ("""
-r13
-""" as player).turnEnd must beFalse
+      "by hand and by pair" should {
+
+        "if nobody opened" should {
+          "east not opened" in {
+            val hist = discardHistory.withOpenStates(emptyOpens)
+            fullEastSituation.withHistory(hist).normalEnd must beFalse
+          }
+
+          "east opened series" in {
+            "old open" in {
+              val hist = discardHistory.withOpenStates(eastOpens(old = true, pairs = false))
+              emptyEastSituation.withHistory(hist).handEnd must beFalse
+              emptyEastSituation.withHistory(hist).pairEnd must beFalse
+            }
+            "new open" in {
+              val hist = discardHistory.withOpenStates(eastOpens(old = false, pairs = false))
+              emptyEastSituation.withHistory(hist).handEnd must beTrue
+              emptyEastSituation.withHistory(hist).pairEnd must beFalse
+            }
+          }
+
+          "east opened pairs" in {
+            "old open" in {
+              val hist = discardHistory.withOpenStates(eastOpens(old = true, pairs = true))
+              emptyEastSituation.withHistory(hist).handEnd must beFalse
+              emptyEastSituation.withHistory(hist).pairEnd must beTrue
+            }
+            "new open" in {
+              val hist = discardHistory.withOpenStates(eastOpens(old = false, pairs = true))
+              emptyEastSituation.withHistory(hist).handEnd must beTrue
+              emptyEastSituation.withHistory(hist).pairEnd must beTrue
+            }
+          }
+        }
+
+        "if west opened" should {
+          "west opened series" in {
+            val westOpens = makeOpens(emptyOpens, WestSide, old = true, pairs = false)
+            "east not opened" in {
+              val hist = discardHistory.withOpenStates(westOpens)
+              emptyEastSituation.withHistory(hist).handEnd must beFalse
+              emptyEastSituation.withHistory(hist).pairEnd must beFalse
+            }
+
+            "east opened series" should {
+              "old open" in {
+                val hist = discardHistory.withOpenStates(eastOpens(westOpens, old = true, pairs = false))
+                emptyEastSituation.withHistory(hist).handEnd must beFalse
+                emptyEastSituation.withHistory(hist).pairEnd must beFalse
+
+              }
+              "new open" in {
+                val hist = discardHistory.withOpenStates(eastOpens(westOpens, old = false, pairs = false))
+                emptyEastSituation.withHistory(hist).handEnd must beFalse
+
+                emptyEastSituation.withHistory(hist).pairEnd must beFalse
+              }
+            }
+
+            "east opened pairs" in {
+              "old open" in {
+                val hist = discardHistory.withOpenStates(eastOpens(westOpens, old = true, pairs = true))
+                emptyEastSituation.withHistory(hist).handEnd must beFalse
+                emptyEastSituation.withHistory(hist).pairEnd must beTrue
+              }
+              "new open" in {
+                val hist = discardHistory.withOpenStates(eastOpens(westOpens, old = false, pairs = true))
+                emptyEastSituation.withHistory(hist).handEnd must beFalse
+                emptyEastSituation.withHistory(hist).pairEnd must beTrue
+              }
+            }
+          }
+
+          "west opened pairs" in {
+            val westOpens = makeOpens(emptyOpens, WestSide, old = true, pairs = true)
+            "east not opened" in {
+              val hist = discardHistory.withOpenStates(westOpens)
+              emptyEastSituation.withHistory(hist).handEnd must beFalse
+              emptyEastSituation.withHistory(hist).pairEnd must beFalse
+            }
+
+            "east opened series" in {
+              "old open" in {
+                val hist = discardHistory.withOpenStates(eastOpens(westOpens, old = true, pairs = false))
+                emptyEastSituation.withHistory(hist).handEnd must beFalse
+                emptyEastSituation.withHistory(hist).pairEnd must beFalse
+              }
+              "new open" in {
+                val hist = discardHistory.withOpenStates(eastOpens(westOpens, old = false, pairs = false))
+                emptyEastSituation.withHistory(hist).handEnd must beFalse
+                emptyEastSituation.withHistory(hist).pairEnd must beFalse
+              }
+            }
+
+            "east opened pairs" in {
+              "old open" in {
+                val hist = discardHistory.withOpenStates(eastOpens(westOpens, old = true, pairs = true))
+                emptyEastSituation.withHistory(hist).handEnd must beFalse
+                emptyEastSituation.withHistory(hist).pairEnd must beTrue
+              }
+              "new open" in {
+                val hist = discardHistory.withOpenStates(eastOpens(westOpens, old = false, pairs = true))
+                emptyEastSituation.withHistory(hist).handEnd must beFalse
+                emptyEastSituation.withHistory(hist).pairEnd must beTrue
+              }
+            }
+          }
+        }
       }
     }
   }

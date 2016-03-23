@@ -16,8 +16,8 @@ case class Game(
     })
 
     val newGame = copy(
-      table = move.after,
-      player = player(move.action),
+      table = move.finalizeAfter,
+      player = move.finalizePlayer,
       turns = newTurns
     )
     newGame

@@ -7,9 +7,9 @@ abstract class Variant(
   val id: Int,
   val name: String) {
 
-  def validMoves(situation: Situation): List[Action] = situation.actor.moves
+  val scoringSystem: ScoringSystem
 
-  def end(situation: Situation): Boolean = false
+  def validMoves(situation: Situation): List[Action] = situation.actor.moves
 
   def move(situation: Situation, side: Side, action: Action): Valid[Move] = {
     def findMove(action: Action): Option[Move] = situation.toMove(action)
@@ -21,6 +21,11 @@ abstract class Variant(
     } yield m1
   }
 
+  def winner(situation: Situation): Option[Side] = None
+
+  def endScores(situation: Situation): Option[Sides[EndScoreSheet]] = situation.end option Sides(scoringSystem.sheet(situation, _))
+
+  def finalizeTable(table: Table, player: Player, action: Action): Table = table
 }
 
 case class Dealer(side: Side) {

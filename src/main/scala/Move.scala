@@ -4,7 +4,28 @@ case class Move(
   player: Player,
   action: Action,
   before: Table,
-  after: Table)
+  after: Table) {
+
+  def finalizeAfter: Table = {
+    val table = after
+
+    table.variant.finalizeTable(table, player, action)
+
+    // commit open
+  }
+
+  def finalizePlayer: Player = {
+    player(action) updateHistory { h1 =>
+      action match {
+        case dm@DrawMiddle(p) => h1.withLastMove(dm)
+        case dd@Discard(p) => h1.addLastMove(dd).withOpenStates(after.opener)
+        case a => h1.addLastMove(a)
+      }
+    }
+
+    // add last
+  }
+}
 
 object Move {
 

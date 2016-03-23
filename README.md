@@ -102,3 +102,56 @@ specific for side
 middle = middleCount + gosterge
 
 board/discards/series/pairs/middle
+
+
+#### Scores
+
+If you have single piece left and discard, game ends
+
+##### End by Hand
+
+When nobody opened, you open and end, you end by hand, 
+Opponents get double score
+
+##### End by Pair
+
+If you opened pairs, and end, you end by pair
+Opponents get double score
+
+##### End by Discard Okey
+
+If you end by discarding okey, you end by discard okey
+Opponents get double score
+
+
+#### Game End
+
+If no middle piece left or a player has no piece left after discard game ends
+
+After game ends
+if player has opened gets score of the sum of their hand pieces
+if player hasn't opened gets full score
+if player has a okey in hand gets full score
+
+if player has opened pairs gets double score
+
+if player ends the game gets negative full score
+if player ends by discard okey gets negative double score
+
+
+example:
+
+end by hand x2
+end by pair x2
+end by discard okey x2
+
+   o  h         mhp md = t
+p1 os 10 +101   x2  x2 = 40 + 101
+p2 op 20 x2     x2  x2 = 40
+p3 no xx +101   x2  x2 = 404
+p4 os 0 -101    x2    = -202
+
+open type
+hand sum
+okey left
+end type

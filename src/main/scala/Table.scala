@@ -8,7 +8,8 @@ case class Table(
   middles: List[Piece],
   opener: Option[Opener],
   sign: Piece,
-  variant: Variant) {
+  variant: Variant,
+  scoreSheet: Sides[ScoreSheet] = Sides(_ => ScoreSheet.emptySheet)) {
 
   import implicitFailures._
 

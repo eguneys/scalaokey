@@ -10,12 +10,34 @@ case class Situation(table: Table, player: Player) {
     actor.toMove(action)
   }
 
+  lazy val okey = table.okey
+
+  lazy val lastSide = player.side.previous
+  lazy val lastMoves = player.history.lastMoves
+  lazy val lastDiscard = lastMoves collectFirst { case Discard(p) => p }
+
+  lazy val openStates = player.history.openStates
+  lazy val lastSideOpens = openStates(lastSide)
+  lazy val opensSize = openStates.flatten.toList length
+
   def middleEnd: Boolean = table.middles.isEmpty
 
-  def discardEnd: Boolean = table.boards(player.side).isEmpty
+  def handEnd: Boolean = normalEnd && lastSideOpens.exists (!_.old) && opensSize == 1
 
-  def turnEnd: Boolean = false
+  def pairEnd: Boolean = normalEnd && lastSideOpens.exists (_.pairs)
+
+  def okeyEnd: Boolean = normalEnd && lastDiscard.exists (_ == okey)
+
+  def normalEnd: Boolean = lastDiscard.isDefined && table.boards(lastSide).isEmpty
+
+  def end: Boolean = false
+
+  def endScores: Option[Sides[EndScoreSheet]] = table.variant.endScores(this)
 
   def move(side: Side, action: Action): Valid[Move] =
     table.variant.move(this, side, action)
+
+  def withHistory(history: History) = copy(
+    player = player withHistory(history)
+  )
 }
