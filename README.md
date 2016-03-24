@@ -130,7 +130,7 @@ If no middle piece left or a player has no piece left after discard game ends
 
 After game ends
 if player has opened gets score of the sum of their hand pieces
-if player hasn't opened gets full score
+if player hasn't opened gets full score regardless of the hand sum
 if player has a okey in hand gets full score
 
 if player has opened pairs gets double score

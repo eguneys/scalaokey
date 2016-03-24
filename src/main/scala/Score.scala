@@ -12,14 +12,16 @@ object ScoreSheet {
   val emptySheet = ScoreSheet(Nil)
 }
 
-case class EndScoreSheet(handSum: Int, scores: List[FlagScore]) {
-  val total = scores.foldRight(handSum: Int) { _ apply _ }
+trait EndScoreSheet {
+  val handSum: Int
+  val scores: List[FlagScore]
+  val total: Int
 }
 
 sealed abstract class Flag(val id: Int)
-sealed abstract class FlagScore(val id: Int) {
+
+abstract class FlagScore(val id: Int) {
   val flag: Flag
-  def apply(acc: Int): Int
 }
 
 abstract class ScoringSystem {
@@ -38,25 +40,12 @@ abstract class ScoringSystem {
     case HandOpenNone => !situation.openStates(side).isDefined
   }
 
-  def handSum(situation: Situation, side: Side): Int = situation.table.boards(side).handSum
+  def handSum(situation: Situation, side: Side): Int = situation.table.handSum(side)
 
-  def sheet(situation: Situation, side: Side) = {
-    val sum = handSum(situation, side)
-    val scores = flags(situation, side) map { f => scorer(f) }
-
-    EndScoreSheet(sum, scores)
-  }
+  def sheet(situation: Situation, side: Side): EndScoreSheet
 }
 
 object ScoringSystem {
-
-  case class Adder(val value: Int, flag: Flag) extends FlagScore(1) {
-    def apply(acc: Int) = acc + value
-  }
-  case class Double(flag: Flag) extends FlagScore(2) {
-    def apply(acc: Int) = acc * 2
-  }
-
 
   case object EndByHand extends Flag(1)
   case object EndByPair extends Flag(2)

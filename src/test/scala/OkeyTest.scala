@@ -123,4 +123,10 @@ trait OkeyTest extends Specification
   def haveOpenStates(states: Sides[Option[Opens]]): Matcher[Valid[Game]] = beSuccess.like {
     case g => g.player.history.openStates must_== states
   }
+
+  def haveScores(totals: Sides[Int]): Matcher[Valid[Game]] = beSuccess.like {
+    case g => g.situation.endScores must beSome.like {
+      case sheets => sheets map(_.total) must_== totals
+    }
+  }
 }

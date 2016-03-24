@@ -7,6 +7,8 @@ class PlayTest extends OkeyTest {
 
     def continuePlay(game: Valid[Game], side: Side, actions: Action*): Valid[Game] = game flatMap { _.playMoves(side, actions:_*) }
 
+    // def playMoves(game: Game, turns: (Side, List[Action])*): Valid[Game] = ???
+
     "change turns on discard" in {
       val game = situationToGame("""
 r13
@@ -75,9 +77,23 @@ l2
       }
     }
 
-    // "calculate scores" in {
-    //   http://hakkarim.net/34oyunu/kurallar.htm#1
-    // }
+//     "calculate scores" in {
+//       val game = situationToGame("""
+// r13
+// l1l1l1l1l1l1l1l1l1l1l1l1
+// r10l10g10b10r10l10g10b10r10l10g10b10
+// r10l10g10b10r10l10g10b10r10l10g10b10
+// r10l10g10b10r10l10g10b10r10l10g10b10
+// r10l10g10b10r10l10g10b10r10l10g10b10
+// """ as Player(EastSide))
+
+//       val eastOpenSeries120 = game.playMoves(EastSide, DrawMiddle, OpenSeries(Piece.<>(10), Piece.<>(10), Piece.<>(10)), Discard(L1))
+
+//       "game1" in {
+//         val turn2 = continuePlay(turn1, NorthSide, DrawMiddle, Discard(L1))
+
+//       }
+//     }
 
   }
 }

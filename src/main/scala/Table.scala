@@ -83,6 +83,11 @@ case class Table(
     }) toValid "No piece on board " + piece
   }
 
+  def handSum(side: Side): Int = boards(side).pieceList.foldLeft(0) {
+    case (acc, p) if p == okey => acc
+    case (acc, p) => acc + p.number
+  }
+
   def toDrawMiddle(side: Side): Option[Piece] = middles.headOption
 
   def toDrawLeft(side: Side): Option[Piece] = discards(side previous).headOption

@@ -79,5 +79,125 @@ r13
         }
       }
     }
+
+    "hand scores" in {
+      "normal end" in {
+        val game = situationToGame("""
+r13
+l1
+l7l9r3r4
+l7l9r3r1
+l7l9r3r4
+
+
+
+
+
+er1r2r3 wr1r2r3 sr1r2r3
+nr1r1
+""" as Player(SouthSide))
+
+        val endGame = game.playMoves(SouthSide, DrawMiddle, Discard(L1))
+
+        "open player gets hand sum score" in {
+          // hand okey player gets + 101
+          // pair open player gets double
+          // hand zero player gets -101
+          endGame must haveScores(Sides(23, 19 + 101, 23 * 2, -101))
+        }
+      }
+
+      "okey end" in {
+        val game = situationToGame("""
+r13
+r1
+l7l9r3r4
+l7l9r3r1
+l7l9r3r4
+
+
+
+
+
+er1r2r3 wr1r2r3 sr1r2r3
+nr1r1
+""" as Player(SouthSide))
+
+        val endGame = game.playMoves(SouthSide, DrawMiddle, Discard(R1))
+
+        //"open player gets hand sum score"
+        // hand okey player gets + 101
+        // pair open player gets double
+        // hand zero player gets -101
+        endGame must haveScores(Sides(23, 19 + 101, 23 * 2, -101) map(_*2))
+      }
+
+      "hand end" in {
+        val game = situationToGame("""
+r13
+l1
+l7l9r3r4
+l7l9r3r1
+l7l9r3r4
+l10g10r10b10l10g10r10b10l10g10r10b10
+""" as Player(SouthSide))
+
+        val endGame = game.playMoves(SouthSide,
+          DrawMiddle,
+          OpenSeries(Piece.<>(10), Piece.<>(10), Piece.<>(10)),
+          Discard(L1))
+
+        endGame must haveScores(Sides(101, 101, 101, -101) map (_*2))
+      }
+
+      "hand end okey discard" in {
+        val game = situationToGame("""
+r13
+r1
+l7l9r3r4
+l7l9r3r1
+l7l9r3r4
+l10g10r10b10l10g10r10b10l10g10r10b10
+""" as Player(SouthSide))
+
+        val endGame = game.playMoves(SouthSide,
+          DrawMiddle,
+          OpenSeries(Piece.<>(10), Piece.<>(10), Piece.<>(10)),
+          Discard(R1))
+
+        endGame must haveScores(Sides(101, 101, 101, -101) map (_*4))
+      }
+
+      "pair end" in {
+        val game = situationToGame("""
+r13
+l1l2l3
+l7l7r3r3r2r2r1r1r4r4
+l7l9r3r1
+l7l9r3r4
+l10g10r10b10l10g10r10b10l10g10r10b10b13
+
+
+
+
+
+wr1r1 wr2r2
+""" as Player(SouthSide))
+
+        val g2 = game.playMoves(SouthSide,
+          DrawMiddle,
+          OpenSeries(Piece.<>(10), Piece.<>(10), Piece.<>(10)),
+          Discard(L1))
+
+        val endGame = continuePlay(g2, EastSide,
+          DrawMiddle,
+          OpenPairs(L7.w, R1.w, R2.w, R3.w, R4.w),
+          Discard(L2))
+
+        // hand zero / hand open pair / end by pair = gets -101  not -404
+        // west => hand okey / hand open pair
+        endGame must haveScores(Sides(-101, (19 + 101) * 4, 101 * 2, 13 * 2))
+      }
+    }
   }
 }

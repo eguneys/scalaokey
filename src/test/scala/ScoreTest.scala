@@ -8,6 +8,7 @@ class ScoreTest extends OkeyTest {
 
   "scoring system" should {
     import ScoringSystem._
+    import StandardScoringSystem._
 
     val system = StandardScoringSystem
 
@@ -59,10 +60,20 @@ g1g10g13
 l2
 """ as player)
 
-      system.handSum(situation, EastSide) must_== 6
-      system.handSum(situation, WestSide) must_== 24
-      system.handSum(situation, NorthSide) must_== 2
-      system.handSum(situation, SouthSide) must_== 0
+      "sums hands" in {
+        system.handSum(situation, WestSide) must_== 24
+        system.handSum(situation, NorthSide) must_== 2
+        system.handSum(situation, SouthSide) must_== 0
+      }
+
+      "ignores okey" in {
+        system.handSum(situation, EastSide) must_== 5 // 6
+      }
+
+      "sums fake" in {
+        3 must_== 4
+      }.pendingUntilFixed
+    
     }
 
     "find flags" in {
@@ -127,6 +138,54 @@ r13
         system.flags(situation, NorthSide) must_== List(HandZero, HandOpenNone)
       }
     }
-  }
 
+
+    "evaluate score sheet" should {
+      def makeSheet(handSum: Int, flags: Flag*): Sheet =
+        Sheet(handSum, flags map system.scorer toList)
+
+      "hand open series" in {
+        "gets hand sum" in { makeSheet(11).total must_== 11 }
+
+        "hand okey gets hand sum +101" in {
+          makeSheet(11, HandOkey).total must_== 112
+        }
+
+        "hand zero gets -101" in {
+          makeSheet(0, HandZero).total must_== -101
+          makeSheet(0, EndByDiscardOkey, HandZero).total must_== -202
+          makeSheet(0, EndByHand, EndByDiscardOkey, HandZero).total must_== -404
+        }
+
+        "end by discard/hand gets double score" in {
+          makeSheet(11, EndByDiscardOkey).total must_== 22
+          makeSheet(11, EndByHand).total must_== 22
+        }
+      }
+
+      "hand pair gets double hand sum" in {
+        makeSheet(11, HandOpenPair).total must_== 22
+      }
+
+      // maybe gets -202?
+      "hand zero and hand open pair gets -101" in {
+        makeSheet(0, HandZero, EndByPair, HandOpenPair).total must_== -101
+      }
+
+      "no open" in {
+        "gets 101 ignoring handsum" in {
+          makeSheet(11, HandOpenNone).total must_== 101
+        }
+
+        "hand okey gets 101 ignoring double" in {
+          makeSheet(11, HandOpenNone, HandOkey).total must_== 101
+        }
+
+        "end by discard/hand gets double" in {
+          makeSheet(11, EndByDiscardOkey, HandOpenNone).total must_== 202
+          makeSheet(11, EndByHand, EndByDiscardOkey, HandOpenNone).total must_== 404
+        }
+      }
+    }
+  }
 }
