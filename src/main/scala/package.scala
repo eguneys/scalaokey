@@ -9,6 +9,7 @@ package object okey
     with scalalib.Zero.Syntax
     with scalalib.Zero.Instances
 
+    with scalaz.std.OptionFunctions
     with scalaz.syntax.std.ToOptionIdOps
 
     with scalaz.std.ListInstances

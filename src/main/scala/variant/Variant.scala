@@ -54,6 +54,38 @@ case class Dealer(side: Side) {
   }
 }
 
+case class TestDealer(side: Side) {
+
+  import Piece._
+
+  def boardsCount = 21 * 4 + 1
+
+  lazy val pieces: List[Piece] = Random.shuffle(Piece.initial)
+
+  lazy val boards: Sides[Board] = dealBoards(21)
+
+  lazy val sign: Piece = G13
+
+  lazy val middles: List[Piece] = pieces drop (boardsCount + 1)
+
+  private[variant] def dealBoards(count: Int): Sides[Board] = {
+    def withExtra(ps: List[Piece], s: Side):List[Piece] =
+      (s == side) fold((pieces head) :: ps, ps)
+
+    val extra = List(G1, L8)
+    val east = List(extra, Piece.<>(10), Piece.<>(10), Piece.<>(5), R1.|>(3)).flatten
+    val west = List(extra, Piece.<>(10), Piece.<>(10), Piece.<>(8)).flatten
+    val north = List(extra, R1.w, R2.w, R3.w, R4.w, R5.w).flatten
+    val south = List(extra, L1.w, L2.w, L3.w, L4.w, L5.w, L6.w).flatten
+
+    Sides(
+      Board(withExtra(east, EastSide)),
+      Board(withExtra(west, WestSide)),
+      Board(withExtra(north, NorthSide)),
+      Board(withExtra(south, SouthSide)))
+  }
+}
+
 object Variant {
   val default = Standard
 }

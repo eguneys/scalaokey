@@ -34,6 +34,10 @@ case class Situation(table: Table, player: Player) {
 
   def endScores: Option[Sides[EndScoreSheet]] = table.variant.endScores(this)
 
+  def status: Option[Status] =
+    if (end) Status.End.some
+    else none
+
   def move(side: Side, action: Action): Valid[Move] =
     table.variant.move(this, side, action)
 

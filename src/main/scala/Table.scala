@@ -1,6 +1,6 @@
 package okey
 
-import variant.{ Variant, Dealer }
+import variant.{ Variant }
 
 case class Table(
   boards: Sides[Board],
@@ -125,7 +125,7 @@ case class Table(
 
 object Table {
   def init(variant: Variant, player: Side = EastSide): Table = {
-    val dealer = Dealer(player)
+    val dealer = okey.variant.TestDealer(player)
     Table(
       boards = dealer.boards,
       middles = dealer.middles,
