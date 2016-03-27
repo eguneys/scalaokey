@@ -15,45 +15,36 @@ case object Standard extends Variant(
 object StandardScoringSystem extends AbstractScoringSystem {
 
   import AbstractScoringSystem._
+  import FlagScore._
 
+  // case class Sheet(val handSum: Int, scores: List[FlagScore]) extends EndScoreSheet {
+  //   // val total = scores.foldRight(handSum) { _ apply _ }
 
-  case class Adder(val value: Int, flag: Flag) extends FlagScore(1)
-  case class Double(flag: Flag) extends FlagScore(2)
+  //   val handSumPenalty = scores.exists(_.flag == HandOpenNone).fold(0, {
+  //     scores collectFirst {
+  //       case Adder(value, HandOkey) => handSum + value
+  //     } getOrElse handSum
+  //   })
 
-  case class Sheet(val handSum: Int, scores: List[FlagScore]) extends EndScoreSheet {
-    // val total = scores.foldRight(handSum) { _ apply _ }
+  //   val total = {
+  //     val filteredScores = scores.filterNot(_.flag == HandOkey)
 
-    val handSumPenalty = scores.exists(_.flag == HandOpenNone).fold(0, {
-      scores collectFirst {
-        case Adder(value, HandOkey) => handSum + value
-      } getOrElse handSum
-    })
+  //     val (sum, mult) = filteredScores.foldRight((handSumPenalty, 1): (Int, Int)) {
+  //       case (_:Double, (sum, mult)) => (sum, mult * 2)
+  //       case (Adder(value, _), (sum, mult)) => (sum + value, mult)
+  //     }
+  //     sum * mult
+  //   }
+  // }
 
-    val total = {
-      val filteredScores = scores.filterNot(_.flag == HandOkey)
-
-      val (sum, mult) = filteredScores.foldRight((handSumPenalty, 1): (Int, Int)) {
-        case (_:Double, (sum, mult)) => (sum, mult * 2)
-        case (Adder(value, _), (sum, mult)) => (sum + value, mult)
-      }
-      sum * mult
-    }
-  }
-
-  def scorer(flag: Flag): FlagScore = flag match {
-    case EndByHand => Double(EndByHand)
-    case EndByPair => Double(EndByPair)
-    case EndByDiscardOkey => Double(EndByDiscardOkey)
-    case HandZero => Adder(-101, HandZero)
-    case HandOkey => Adder(101, HandOkey)
-    case HandOpenPair => Double(HandOpenPair)
-    case HandOpenNone => Adder(101, HandOpenNone)
-  }
-
-  def sheet(situation: Situation, side: Side): Sheet = {
-    val sum = handSum(situation, side)
-    val scores = flags(situation, side) map { f => scorer(f) }
-
-    Sheet(sum, scores)
+  def scorer(flag: Flag, flags: List[Flag]): Option[FlagScore] = flag match {
+    case EndByHand => Double.some
+    case EndByPair => Double.some
+    case EndByDiscardOkey => Double.some
+    case HandZero => Erase.some
+    case HandOkey => flags.find(_ == HandOpenSome).map(_ => Penalty)
+    case HandOpenPair => Double.some
+    case HandOpenNone => Penalty.some
+    case HandOpenSome => HandSum.some
   }
 }

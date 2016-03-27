@@ -117,7 +117,7 @@ trait OkeyTest extends Specification
   }
 
   def haveLastMoves(actions: Action*): Matcher[Valid[Game]] = beSuccess.like {
-    case g => g.player.history.lastMoves must contain(exactly(actions :_*))
+    case g => g.player.history.lastMoves must contain(exactly(actions map (_.toUci) :_*))
   }
 
   def haveOpenStates(states: Sides[Option[Opens]]): Matcher[Valid[Game]] = beSuccess.like {

@@ -1,13 +1,15 @@
 package okey
 
+import format.Uci
+
 case class History(
-  lastMoves: List[Action] = Nil,
+  lastMoves: List[Uci] = Nil,
   openStates: Sides[Option[Opens]] = Sides[Option[Opens]]
 ) {
 
-  def withLastMove(move: Action) = copy(lastMoves = List(move))
+  def withLastMove(move: Action) = copy(lastMoves = List(move.toUci))
 
-  def addLastMove(move: Action) = copy(lastMoves = move :: lastMoves)
+  def addLastMove(move: Action) = copy(lastMoves = move.toUci :: lastMoves)
 
   def withOpenStates(oopener: Option[Opener]) = oopener.fold(this) { opener =>
     copy(openStates = opener.opens map Opens.apply)
@@ -18,7 +20,7 @@ case class History(
 
 object History {
   def apply(actions: Action*): History =
-    History(lastMoves = actions.toList)
+    History(lastMoves = actions.toList map(_.toUci))
 }
 
 case class Opens(pairs: Boolean, old: Boolean)

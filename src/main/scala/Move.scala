@@ -1,5 +1,7 @@
 package okey
 
+import format.Uci
+
 case class Move(
   player: Player,
   action: Action,
@@ -43,6 +45,8 @@ sealed trait Action {
   def withPieceGroup(group: PieceGroups): Action = this
 
   val key: String = toSingle.key
+
+  def toUci: Uci = Uci.Move(this, None, None)
 }
 
 case object DrawLeft extends Action {
@@ -85,21 +89,31 @@ case object LeaveTaken extends Action {
 
 case class DrawMiddle(piece: Piece) extends Action {
   override def toSingle = DrawMiddle
+
+  override def toUci: Uci = Uci.Move(this, Some(piece), None)
 }
 
 case class DrawLeft(piece: Piece) extends Action {
   override def toSingle = DrawLeft
+
+  override def toUci: Uci = Uci.Move(this, Some(piece), None)
 }
 
 case class Discard(piece: Piece) extends Action {
   override def toSingle = Discard
+
+  override def toUci: Uci = Uci.Move(this, Some(piece), None)
 }
 
 case class OpenSeries(pieces: PieceGroups) extends Action {
   override def toSingle = OpenSeries
+
+  override def toUci: Uci = Uci.Move(this, None, Some(pieces))
 }
 case class OpenPairs(pieces: PieceGroups) extends Action {
   override def toSingle = OpenPairs
+
+  override def toUci: Uci = Uci.Move(this, None, Some(pieces))
 }
 
 case class CollectOpen(save: (Board, Opener)) extends Action {

@@ -13,7 +13,7 @@ case class Situation(table: Table, player: Player) {
   lazy val okey = table.okey
 
   lazy val lastSide = player.side.previous
-  lazy val lastMoves = player.history.lastMoves
+  lazy val lastMoves = player.history.lastMoves map(_.action)
   lazy val lastDiscard = lastMoves collectFirst { case Discard(p) => p }
 
   lazy val openStates = player.history.openStates

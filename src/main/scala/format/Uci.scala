@@ -11,16 +11,22 @@ object Uci
     extends scalaz.std.OptionInstances
     with scalaz.syntax.ToTraverseOps {
 
-  case class Move(val action: Action) extends Uci {
-    def uci = action.key
+  case class Move(val singleAction: Action, piece: Option[Piece] = None, group: Option[PieceGroups] = None) extends Uci {
+
+    def uci = action.key + pieceString + groupString
+
+    def action = piece.fold(group.fold(singleAction) {
+      singleAction.withPieceGroup(_)
+    }) {
+      singleAction.withPiece(_)
+    }
+
+    def pieceString = piece.fold("")("P" + _.toString)
+
+    def groupString = group.fold("")("G" + _.map(_.mkString).mkString(" "))
   }
 
   object Move {
-    def apply(move: Action, piece: Option[Piece], group: Option[PieceGroups]): Move = Move(piece.fold(group.fold(move) {
-      move.withPieceGroup(_)
-    }) {
-      move.withPiece(_)
-    })
 
     def fromStrings(key: String, pieceS: Option[String] = None, pieceGroupS: Option[String] = None) = for {
       move <- (Action byKey key)
@@ -39,4 +45,21 @@ object Uci
     def readGroups(groups: String): Option[PieceGroups] =
       groups.split(' ').toList.map(parsePieces).sequence
   }
+
+  def apply(move: String): Option[Uci] = {
+    Action.byKey(move take 2) map { singleAction =>
+      val rest = move drop 3
+      move.lift(2) match {
+        case Some('P') => Move(singleAction, piece = Piece byKey(rest))
+        case Some('G') => Move(singleAction, group = Move.readGroups(rest))
+        case _ => Move(singleAction)
+      }
+    }
+  }
+
+  def readList(moves: String): Option[List[Uci]] =
+    moves.split('/').toList.map(apply).sequence
+
+  def writeList(moves: List[Uci]): String =
+    moves.map(_.uci) mkString "/"
 }

@@ -35,4 +35,10 @@ package object okey
   object implicitFailures {
     implicit def stringToFailures(str: String): Failures = scalaz.NonEmptyList(str)
   }
+
+  def parseIntOption(str: String): Option[Int] = try {
+    Some(java.lang.Integer.parseInt(str))
+  } catch {
+    case e: NumberFormatException => None
+  }
 }
