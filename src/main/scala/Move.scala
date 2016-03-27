@@ -24,6 +24,7 @@ case class Move(
     player(action) updateHistory { h1 =>
       action match {
         case dm@DrawMiddle(p) => h1.withLastMove(dm)
+        case dl@DrawLeft(p) => h1.withLastMove(dl)
         case dd@Discard(p) => h1.addLastMove(dd).withOpenStates(after.opener)
         case a => h1.addLastMove(a)
       }

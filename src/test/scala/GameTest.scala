@@ -32,6 +32,10 @@ r13
         continuePlay(g2, NorthSide, DrawMiddle) must haveLastMoves(DrawMiddle(L2))
       }
 
+      "reset after draw left" in {
+        continuePlay(g2, NorthSide, DrawLeft) must haveLastMoves(DrawLeft(R10))
+      }
+
       "save opens" in {
         val moves = List(OpenSeries(Piece.<>(10), Piece.<>(10), Piece.<>(10)), Discard(L1))
         game.playMoveList(EastSide, DrawMiddle :: moves) must haveLastMoves((DrawMiddle(L1) :: moves):_*)
