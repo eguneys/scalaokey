@@ -20,16 +20,16 @@ trait OkeyTest extends Specification
   }
 
   implicit def piecesToSeries(pieces: List[Piece]): OpenSerie =
-    Grouper.series(pieces) get
+    StandardGrouper(R13).series(pieces) get
 
   implicit def piecesToPairs(pieces: List[Piece]): OpenPair =
-    Grouper.pairs(pieces) get
+    StandardGrouper(R13).pairs(pieces) get
 
-  implicit def piecesToSeries(pieces: PieceGroups): List[OpenSerie] =
-    Grouper.seriesSeq(pieces) get
+  implicit def groupsToSeries(pieces: PieceGroups): List[OpenSerie] =
+  StandardGrouper(R13).seriesSeq(pieces) get
 
-  implicit def piecesToPairs(pieces: PieceGroups): List[OpenPair] =
-    Grouper.pairsSeq(pieces) get
+  implicit def groupsToPairs(pieces: PieceGroups): List[OpenPair] =
+    StandardGrouper(R13).pairsSeq(pieces) get
 
   implicit def richGame(game: Game) = new {
     def playMoves(side: Side, moves: Action*): Valid[Game] = playMoveList(side, moves)
@@ -53,7 +53,8 @@ trait OkeyTest extends Specification
   def makeTable(side: Side): Table =
     Table init(okey.variant.Standard, side)
 
-  def makeTable(east: Piece, west: Piece, north: Piece, south: Piece, sign: Piece, middle: Piece): Table =
+  def makeTable(east: Piece, west: Piece, north: Piece, south: Piece, sign: Piece, middle: Piece): Table = {
+    val grouper = StandardGrouper(sign)
     Table(
       boards = Sides(
         Board(List.fill(22)(east)),
@@ -68,14 +69,14 @@ trait OkeyTest extends Specification
       ),
       middles = List.fill(18)(middle),
       opener = Some(Opener(List(
-        EastSide -> Grouper.series(Piece.<>(10)).get,
-        WestSide -> Grouper.series(Piece.<>(11)).get,
-        WestSide -> Grouper.series(Piece.<>(12)).get
+        EastSide -> grouper.series(Piece.<>(10)).get,
+        WestSide -> grouper.series(Piece.<>(11)).get,
+        WestSide -> grouper.series(Piece.<>(12)).get
       ), List(
-        SouthSide -> Grouper.pairs(R10.w).get,
-        SouthSide -> Grouper.pairs(L10.w).get,
-        SouthSide -> Grouper.pairs(G10.w).get,
-        SouthSide -> Grouper.pairs(B10.w).get
+        SouthSide -> grouper.pairs(R10.w).get,
+        SouthSide -> grouper.pairs(L10.w).get,
+        SouthSide -> grouper.pairs(G10.w).get,
+        SouthSide -> grouper.pairs(B10.w).get
       ),
         opens = Sides(
           eastSide = OldOpen(SerieScore(40)).some,
@@ -84,6 +85,7 @@ trait OkeyTest extends Specification
           northSide = None))),
       sign = sign,
       variant = variant.Standard)
+  }
 
   def makeOpener: Opener = Opener empty
 

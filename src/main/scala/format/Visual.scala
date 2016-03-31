@@ -67,12 +67,14 @@ object Visual {
       case n => lines ::: (List.fill(12 - n)(""))
     }
 
-    val opens = filtered drop 10 take 2 match {
+    def findOpenGroups(sign: Piece, opens: List[String]) = opens match {
       case series :: pairs :: Nil =>
+        val grouper = StandardGrouper(sign)
+
         (trimList(series.split(" ")).map(parseOwnedPieces).flatMap { case (side, pieces) =>
-          Grouper.series(pieces) map(g => side -> g) } toList,
+          grouper.series(pieces) map(g => side -> g) } toList,
           trimList(pairs.split(" ")).map(parseOwnedPieces).flatMap { case (side, pieces) =>
-            Grouper.pairs(pieces) map (g => side -> g) } toList
+            grouper.pairs(pieces) map (g => side -> g) } toList
         )
       case _ => throw new Exception("Invalid visual format " + source)
     }
@@ -80,6 +82,9 @@ object Visual {
     filtered.take(10) map parsePieces match {
       case List(sign) :: middles :: east :: west :: north :: south ::
           deast :: dwest :: dnorth :: dsouth :: Nil =>
+
+        val opens = findOpenGroups(sign, filtered drop 10 take 2)
+
         Table(
           boards = Sides(east, west, north, south).map(Board.apply),
           discards = Sides(deast, dwest, dnorth, dsouth),

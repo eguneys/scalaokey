@@ -20,11 +20,18 @@ class PieceTest extends OkeyTest {
       Piece.initial.size must_== 106
     }
 
-    "direction" in {
+    "direction up" in {
       R11.up must_== R12
       R12.up must_== R13
       R13.up must_== R1
       G1.up must_== G2
+    }
+
+    "direction down" in {
+      R11.down must_== R10
+      R12.down must_== R11
+      R13.down must_== R12
+      G1.down must_== G13
     }
 
     "be used to derive relative pieces" in {

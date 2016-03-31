@@ -24,11 +24,11 @@ case class Actor(player: Player, table: Table) {
             player.drawLeft toValid "Not drawn left" flatMap (table.leaveTaken(side, _))
           }
         case OpenSeries(pieces) =>
-          Grouper.seriesSeq(pieces) flatMap { series =>
+          grouper.seriesSeq(pieces) flatMap { series =>
             move(action) { table.openSeries(side, series) }
           }
         case OpenPairs(pieces) =>
-          Grouper.pairsSeq(pieces) flatMap { pairs =>
+          grouper.pairsSeq(pieces) flatMap { pairs =>
             move(action) { table.openPairs(side, pairs) }
           }
         case CollectOpen =>
@@ -40,6 +40,8 @@ case class Actor(player: Player, table: Table) {
         case _ => None
       })
   }
+
+  lazy val grouper: Grouper = StandardGrouper(table.sign)
 
   lazy val moves: List[Action] = player.drawPiece fold(afterDraw, draw)
 

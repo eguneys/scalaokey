@@ -5,6 +5,7 @@ import Math.{ max, min }
 case class Piece(color: Color, number: Int) {
 
   lazy val up: Piece = copy(number = (number % 13) + 1)
+  lazy val down: Piece = copy(number = (number + 11) % 13 + 1)
 
   def w: List[Piece] = List(this, this)
 
@@ -81,9 +82,16 @@ object Piece {
   val B13 = Piece(Blue, 13)
   val F1 = Piece(Fake, 1)
 
-  val all = List(R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, L1, L2, L3, L4, L5, L6, L7, L8, L9, L10, L11, L12, L13, G1, G2, G3, G4, G5, G6, G7, G8, G9, G10, G11, G12, G13, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, F1)
+  val allRed = List(R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13)
+  val allBlack = List(L1, L2, L3, L4, L5, L6, L7, L8, L9, L10, L11, L12, L13)
 
-  val initial = all ::: all
+  val allGreen = List(G1, G2, G3, G4, G5, G6, G7, G8, G9, G10, G11, G12, G13)
+
+  val allBlue = List(B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13)
+
+  val all = allRed ::: allBlack ::: allGreen ::: allBlue
+
+  val initial = List(F1, F1) ::: all ::: all
 
   val allKeys: Map[String, Piece] = all map { pos => pos.key -> pos } toMap
 }

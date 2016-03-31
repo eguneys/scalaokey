@@ -201,7 +201,7 @@ wr1r1 wr2r2
         // hand zero / hand open pair / end by pair = gets -101  not -404
         // west => hand okey / hand open pair
         endGame must haveScores(Sides(-101, (19 + 101) * 4, 101 * 2, 13 * 2))
-      }
+      }.pendingUntilFixed
     }
   }
 }
