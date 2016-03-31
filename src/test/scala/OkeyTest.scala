@@ -19,6 +19,18 @@ trait OkeyTest extends Specification
     def as(player: Player): Situation = Situation(Visual << str, player)
   }
 
+  implicit def piecesToSeries(pieces: List[Piece]): OpenSerie =
+    Grouper.series(pieces) get
+
+  implicit def piecesToPairs(pieces: List[Piece]): OpenPair =
+    Grouper.pairs(pieces) get
+
+  implicit def piecesToSeries(pieces: PieceGroups): List[OpenSerie] =
+    Grouper.seriesSeq(pieces) get
+
+  implicit def piecesToPairs(pieces: PieceGroups): List[OpenPair] =
+    Grouper.pairsSeq(pieces) get
+
   implicit def richGame(game: Game) = new {
     def playMoves(side: Side, moves: Action*): Valid[Game] = playMoveList(side, moves)
 
@@ -56,14 +68,14 @@ trait OkeyTest extends Specification
       ),
       middles = List.fill(18)(middle),
       opener = Some(Opener(List(
-        OpenSerie(EastSide, Piece.<>(10)),
-        OpenSerie(WestSide, Piece.<>(11)),
-        OpenSerie(WestSide, Piece.<>(12))
+        EastSide -> Grouper.series(Piece.<>(10)).get,
+        WestSide -> Grouper.series(Piece.<>(11)).get,
+        WestSide -> Grouper.series(Piece.<>(12)).get
       ), List(
-        OpenPair(SouthSide, R10),
-        OpenPair(SouthSide, L10),
-        OpenPair(SouthSide, G10),
-        OpenPair(SouthSide, B10)
+        SouthSide -> Grouper.pairs(R10.w).get,
+        SouthSide -> Grouper.pairs(L10.w).get,
+        SouthSide -> Grouper.pairs(G10.w).get,
+        SouthSide -> Grouper.pairs(B10.w).get
       ),
         opens = Sides(
           eastSide = OldOpen(SerieScore(40)).some,
@@ -87,14 +99,14 @@ trait OkeyTest extends Specification
   def haveOpenPairs(pairs: List[Piece]*): Matcher[Table] = { t: Table =>
     t.opener must beSome.like {
       case opener =>
-        (opener.pairs map(_.pieces) flatten) must_== pairs.flatten
+        (opener.pairs map(_._2.pieces) flatten) must_== pairs.flatten
     }
   }
 
   def haveOpenSeries(series: List[Piece]*): Matcher[Table] = { t: Table =>
     t.opener must beSome.like {
       case opener =>
-        (opener.series.map(_.pieces).flatten) must_== series.flatten
+        (opener.series.map(_._2.pieces).flatten) must_== series.flatten
     }
   }
 

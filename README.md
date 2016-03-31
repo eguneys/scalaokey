@@ -155,3 +155,47 @@ open type
 hand sum
 okey left
 end type
+
+
+### Okey Piece Open
+
+open series
+
+score
+
+validate
+
+examples
+
+sign: b3
+okey: b4
+fake: b4
+
+r1r2r3r4 10
+r1r2b4r4 10
+r4l4f0g4 16
+
+open series r1r2r3r4 r1r2b4r4 r4l4f0g4
+
+R1 R2 R3 R4
+R1 R2 B4(R3) R4 (score)
+R4 L4 F0(B4) G4 (score)
+
+(valid R1 R2 R3 R4 10)
+(valid R1 R2 B4 R4 10)
+(valid L4 F0 G4    12)
+
+table open series
+
+drop open
+
+R5 group 1 right
+
+get group
+
+(valid R1 R2 R3 R4 10)
+(valid R1 R2 R3 R4 R5 15) drop R5
+
+replace
+(valid R1 R2 B4 R4 10)
+(valid R1 R2 R3 R4 10) drop R3 [replace okey]

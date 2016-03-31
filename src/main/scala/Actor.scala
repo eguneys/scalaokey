@@ -24,9 +24,13 @@ case class Actor(player: Player, table: Table) {
             player.drawLeft toValid "Not drawn left" flatMap (table.leaveTaken(side, _))
           }
         case OpenSeries(pieces) =>
-          move(action) { table.openSeries(side, pieces) }
+          Grouper.seriesSeq(pieces) flatMap { series =>
+            move(action) { table.openSeries(side, series) }
+          }
         case OpenPairs(pieces) =>
-          move(action) { table.openPairs(side, pieces) }
+          Grouper.pairsSeq(pieces) flatMap { pairs =>
+            move(action) { table.openPairs(side, pairs) }
+          }
         case CollectOpen =>
           table.toCollectOpen(side) flatMap { save =>
             move(CollectOpen(save)) { table.collectOpen(side) }

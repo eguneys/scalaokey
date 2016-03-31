@@ -24,14 +24,14 @@ class OpenerTest extends OkeyTest {
     "allow pieces to be opened series" in {
       opener.openSeries(EastSide, series, board) must beSome.like {
         case o =>
-          o.series map(_.pieces) must_== series
+          o.series map(_._2.pieces) must_== series
       }
     }
 
     "allow pieces to be opened pairs" in {
       opener.openPairs(EastSide, pairs, board) must beSome.like {
         case o =>
-          o.pairs map(_.pieces) must_== pairs
+          o.pairs map(_._2.pieces) must_== pairs
       }
     }
 
@@ -43,7 +43,7 @@ class OpenerTest extends OkeyTest {
         _.openSeries(EastSide, series3, board)
       ) must beSome.like {
         case o =>
-          o.series map(_.pieces) must_== series ::: series2 ::: series3
+          o.series map(_._2.pieces) must_== series ::: series2 ::: series3
       }
 
       opener.seqOpener(
@@ -52,7 +52,7 @@ class OpenerTest extends OkeyTest {
         _.openPairs(EastSide, pairs3, board)
       ) must beSome.like {
         case o =>
-          o.pairs map(_.pieces) must_== pairs ::: pairs2 ::: pairs3
+          o.pairs map(_._2.pieces) must_== pairs ::: pairs2 ::: pairs3
       }
     }
 

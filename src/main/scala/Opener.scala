@@ -3,8 +3,8 @@ package okey
 import Math.max
 
 case class Opener(
-  series: List[OpenSerie],
-  pairs: List[OpenPair],
+  series: List[(Side, OpenSerie)],
+  pairs: List[(Side, OpenPair)],
   opens: Sides[Option[OpenState]]) {
 
   import implicitFailures._
@@ -38,37 +38,39 @@ case class Opener(
     actions.foldLeft(Some(this): Option[Opener])(_ flatMap _)
 
 
-  private def findScore(pieces: List[Piece]): Int =
-    pieces.foldLeft(0) { _ + _.number }
+  private def findScore(opens: List[OpenGroup]): Int =
+    opens.foldLeft(0) { _ + _.score }
 
-  def openSeries(side: Side, pieces: PieceGroups, board: Board): Option[Opener] = {
+  def openSeries(side: Side, opened: List[OpenSerie], board: Board): Option[Opener] = {
+    val score = findScore(opened)
     val openState = opens(side) match {
       case None => OpenState(
-        score = SerieScore(findScore(pieces flatten)),
+        score = SerieScore(score),
         boardSave = board,
         openerSave = this)
-      case Some(o: NewOpen) => o.addScore(findScore(pieces flatten))
+      case Some(o: NewOpen) => o.addScore(score)
       case Some(o: OldOpen) => o
     }
 
     Some(copy(
-      series = series ::: pieces.map { ps => OpenSerie(side, ps) },
+      series = series ::: opened.map((side, _)),
       opens = opens.withSide(side, Some(openState))
     ))
   }
 
-  def openPairs(side: Side, pieces: PieceGroups, board: Board): Option[Opener] = {
+  def openPairs(side: Side, opened: List[OpenPair], board: Board): Option[Opener] = {
+    val score = findScore(opened)
     val openState = opens(side) match {
       case None => OpenState(
-        score = PairScore(pieces.length),
+        score = PairScore(score),
         boardSave = board,
         openerSave = this)
-      case Some(o: NewOpen) => o.addScore(pieces.length)
+      case Some(o: NewOpen) => o.addScore(score)
       case Some(o: OldOpen) => o
     }
 
     Some(copy(
-      pairs = pairs ::: pieces.map { ps => OpenPair(side, ps) },
+      pairs = pairs ::: opened.map((side, _)),
       opens = opens.withSide(side, Some(openState))
     ))
   }
@@ -83,8 +85,8 @@ case class Opener(
     case _ => None
   }
 
-  def withSeries(series: List[OpenSerie]) = copy(series = series)
-  def withPairs(pairs: List[OpenPair]) = copy(pairs = pairs)
+  def withSeries(series: List[(Side, OpenSerie)]) = copy(series = series)
+  def withPairs(pairs: List[(Side, OpenPair)]) = copy(pairs = pairs)
 
 }
 

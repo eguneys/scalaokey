@@ -69,10 +69,10 @@ object Visual {
 
     val opens = filtered drop 10 take 2 match {
       case series :: pairs :: Nil =>
-        (trimList(series.split(" ")).map(parseOwnedPieces).map { case (side, pieces) =>
-          OpenSerie(side, pieces) } toList,
-          trimList(pairs.split(" ")).map(parseOwnedPieces).map { case (side, pieces) =>
-            OpenPair(side, pieces) } toList
+        (trimList(series.split(" ")).map(parseOwnedPieces).flatMap { case (side, pieces) =>
+          Grouper.series(pieces) map(g => side -> g) } toList,
+          trimList(pairs.split(" ")).map(parseOwnedPieces).flatMap { case (side, pieces) =>
+            Grouper.pairs(pieces) map (g => side -> g) } toList
         )
       case _ => throw new Exception("Invalid visual format " + source)
     }
@@ -102,8 +102,12 @@ object Visual {
     val middles = table.middles mkString
 
     val opens = table.opener.fold("") { opener =>
-      (opener.series map(s => s.owner.letter + s.pieces.mkString) mkString " ") + "\n" +
-      (opener.pairs map(p => p.owner.letter + p.pieces.mkString) mkString " ")
+      (opener.series map {
+        case (owner, s) => owner.letter + s.pieces.mkString
+      } mkString " ") + "\n" +
+      (opener.pairs map {
+        case (owner, p) => owner.letter + p.pieces.mkString 
+      } mkString " ")
     }
 
     List(sign, middles, boards, discards, opens) mkString "\n"
@@ -111,13 +115,13 @@ object Visual {
 
   def addNewLines(str: String) = "\n" + str + "\n"
 
-  private def findOpens(series: List[OpenSerie], pairs: List[OpenPair]): Sides[Option[OpenState]] = {
+  private def findOpens(series: List[(Side, OpenSerie)], pairs: List[(Side, OpenPair)]): Sides[Option[OpenState]] = {
 
     val scores: Map[Side, OpenScore] = List(EastSide, WestSide, NorthSide, SouthSide) flatMap { side =>
 
-      val pairScore = pairs.filter(_.owner == side).length
+      val pairScore = pairs.filter(_._1 == side).length
 
-      val serieScore = series.filter(_.owner == side).flatMap(_.pieces).foldLeft(0)(_ + _.number)
+      val serieScore = series.filter(_._1 == side).map(_._2.score).sum
 
       (serieScore, pairScore) match {
         case (n, _) if n > 0 => Some(side -> SerieScore(n))

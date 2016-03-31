@@ -47,22 +47,22 @@ case class Table(
   }) toValid "No piece on board " + piece
 
 
-  def openSeries(side: Side, pieces: PieceGroups): Valid[Table] = (for {
-    b1 <- boards(side) take (pieces flatten)
+  def openSeries(side: Side, groups: List[OpenSerie]): Valid[Table] = (for {
+    b1 <- boards(side) take (groups.map(_.pieces).flatten)
     o1 <- opener
-    o2 <- o1.openSeries(side, pieces, boards(side))
+    o2 <- o1.openSeries(side, groups, boards(side))
   } yield {
     copy(boards = boards.withSide(side, b1), opener = Some(o2))
-  }) toValid "No piece on board " + pieces
+  }) toValid "No piece group on board " + groups
 
 
-  def openPairs(side: Side, pieces: List[List[Piece]]): Valid[Table] = (for {
-    b1 <- boards(side) take (pieces flatten)
+  def openPairs(side: Side, groups: List[OpenPair]): Valid[Table] = (for {
+    b1 <- boards(side) take (groups.map(_.pieces).flatten)
     o1 <- opener
-    o2 <- o1.openPairs(side, pieces, boards(side))
+    o2 <- o1.openPairs(side, groups, boards(side))
   } yield {
     copy(boards = boards.withSide(side, b1), opener = Some(o2))
-  }) toValid "No piece on board " + pieces
+  }) toValid "No piece group on board " + groups
 
   def collectOpen(side: Side): Valid[Table] = (for {
     o1 <- opener
