@@ -88,6 +88,26 @@ case object LeaveTaken extends Action {
   override val key = "lt"
 }
 
+case object DropOpenSeries extends Action {
+  override val key = "dos"
+}
+
+case object DropOpenPairs extends Action {
+  override val key = "dop"
+}
+
+case class DropOpenSeries(piece: Piece, pos: OpenPos) extends Action {
+  override def toSingle = DropOpenSeries
+
+  override def toUci: Uci = Uci.Move(this, Some(piece), None)
+}
+
+case class DropOpenPairs(piece: Piece, pos: OpenPos) extends Action {
+  override def toSingle = DropOpenPairs
+
+  override def toUci: Uci = Uci.Move(this, Some(piece), None)
+}
+
 case class DrawMiddle(piece: Piece) extends Action {
   override def toSingle = DrawMiddle
 

@@ -41,9 +41,10 @@ case class PairScore(score: Int) extends OpenScore {
   def add(s: Int): PairScore = copy(score = score + s)
 }
 
-case class OpenPos(group: Int, isLeft: Boolean)
-
-case object OpenPos {
-  val Left = true
-  val Right = false
+sealed trait OpenPos {
+  val group: Int
 }
+
+case class AppendLeft(group: Int) extends OpenPos
+case class AppendRight(group: Int) extends OpenPos
+case class ReplaceOkey(group: Int) extends OpenPos

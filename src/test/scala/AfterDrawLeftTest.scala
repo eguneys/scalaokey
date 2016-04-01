@@ -25,7 +25,7 @@ r1
 
 
 er1r2r3
-""" as player) must bePoss(Discard, OpenSeries, LeaveTaken)
+""" as player) must bePoss(Discard, OpenSeries, LeaveTaken, DropOpenSeries, DropOpenPairs)
     }
   }
 }

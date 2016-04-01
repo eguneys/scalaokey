@@ -11,25 +11,19 @@ sealed abstract class Grouper(sign: Piece)
   def series(pieces: List[Piece]): Option[OpenSerie] = OpenSerie(pieces, findScore(pieces)).some
   def pairs(pieces: List[Piece]): Option[OpenPair] = OpenPair(pieces, 1).some
 
-  def dropOkeySeries(serie: OpenSerie, piece: Piece): Option[OpenSerie] = {
-    serie.pieces.indexOf(okey) match {
-      case -1 => None
-      case n => series(replacePiece(serie.pieces, piece, n))
-    }
+  def dropPairs(pair: OpenPair, piece: Piece): Option[OpenPair] =
+    replaceOkey(pair.pieces, piece) flatMap pairs
+
+  def dropSeries(serie: OpenSerie, piece: Piece, at: OpenPos): Option[OpenSerie] = at match {
+    case _:AppendLeft => series(piece :: serie.pieces)
+    case _:AppendRight => series(serie.pieces :+ piece)
+    case _:ReplaceOkey => replaceOkey(serie.pieces, piece) flatMap series
   }
 
-  def dropOkeyPairs(pair: OpenPair, piece: Piece): Option[OpenPair] = {
-    pair.pieces.indexOf(okey) match {
-      case -1 => None
-      case n => pairs(replacePiece(pair.pieces, piece, n))
-    }
+  private def replaceOkey(pieces: List[Piece], piece: Piece): Option[List[Piece]] = pieces.indexOf(okey) match {
+    case -1 => None
+    case n => pieces.updated(n, piece).some
   }
-
-  def dropSeries(serie: OpenSerie, piece: Piece, isLeft: Boolean): Option[OpenSerie] = series(appendPiece(serie.pieces, piece, isLeft))
-
-  private def replacePiece(pieces: List[Piece], piece: Piece, at: Int): List[Piece] = pieces.updated(at, piece)
-
-  private def appendPiece(pieces: List[Piece], piece: Piece, isLeft: Boolean): List[Piece] = isLeft.fold(piece :: pieces, pieces :+ piece)
 
   def seriesSeq(pieces: PieceGroups): Option[List[OpenSerie]] =
     pieces.map(group => series(group)).sequence

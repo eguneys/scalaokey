@@ -305,7 +305,7 @@ r1r2r3r1b9r2r3b9
 
 wg4g5g6
 """.seqTable(_.openPairs(EastSide, openPieces),
-  _.dropPairs(EastSide, B9, OpenPair(B9.w, 1), 1)
+  _.dropPairs(EastSide, B9, OpenPair(B9.w, 1), ReplaceOkey(1))
         ) must beSuccess.like {
           case t =>
             t.boards(EastSide) must havePieces(R1, R1)
@@ -328,7 +328,7 @@ r2r3r4r1b9g11
 
 wg4g5g6 sg10r1g12
 """.seqTable(_.openSeries(EastSide, openPieces),
-  _.dropSeries(EastSide, G11, OpenSerie(G10.|>(3), 33), 1, addOkey = true)
+  _.dropSeries(EastSide, G11, OpenSerie(G10.|>(3), 33), ReplaceOkey(1))
         ) must beSuccess.like {
           case t =>
             t.boards(EastSide) must havePieces(R1, R1, B9)
@@ -351,7 +351,7 @@ r2r3r4r1b9g13
 
 wg4g5g6 sg10r1g12
 """.seqTable(_.openSeries(EastSide, openPieces),
-  _.dropSeries(EastSide, G13, OpenSerie(List(G10, R1, G12, G13), 46), 1)
+  _.dropSeries(EastSide, G13, OpenSerie(List(G10, R1, G12, G13), 46), AppendRight(1))
         ) must beSuccess.like {
           case t =>
             t.boards(EastSide) must havePieces(R1, B9)
@@ -374,7 +374,7 @@ r2r3r4r1b9g13
 
 wg4g5g6 sg10r1g12
 """.seqTable(_.openSeries(EastSide, openPieces),
-  _.dropSeries(EastSide, G9, OpenSerie(List(G9, G10, R1, G12), 42), 1)
+  _.dropSeries(EastSide, G9, OpenSerie(List(G9, G10, R1, G12), 42), AppendLeft(1))
         ) must beFailure
       }
     }

@@ -36,6 +36,22 @@ case class Actor(player: Player, table: Table) {
           }
         case Discard(piece) =>
           move(action) { table.discard(side, piece) }
+        case DropOpenSeries(piece, pos) =>
+          table.toOpenSerie(pos) flatMap { serie =>
+            grouper.dropSeries(serie, piece, pos) flatMap { updated =>
+              move(action) {
+                table.dropSeries(side, piece, updated, pos)
+              }
+            }
+          }
+        case DropOpenPairs(piece, pos) =>
+          table.toOpenPair(pos) flatMap { pair =>
+            grouper.dropPairs(pair, piece) flatMap { updated =>
+              move(action) {
+                table.dropPairs(side, piece, updated, pos)
+              }
+            }
+          }
         case _ => None
       })
   }
@@ -54,9 +70,9 @@ case class Actor(player: Player, table: Table) {
     afterDrawLeft
   )
 
-  def afterDrawMiddle: List[Action] = List(discardMiddle, openSeries, openPairs, collectOpen) flatten
+  def afterDrawMiddle: List[Action] = List(discardMiddle, openSeries, openPairs, collectOpen, dropSeries, dropPairs) flatten
 
-  def afterDrawLeft: List[Action] = List(discardLeft, openSeries, openPairs, collectOpen, leaveTaken) flatten
+  def afterDrawLeft: List[Action] = List(discardLeft, openSeries, openPairs, collectOpen, leaveTaken, dropSeries, dropPairs) flatten
 
   def discardLeft: Option[Action] = discard(true)
   def discardMiddle: Option[Action] = discard(false)
@@ -79,6 +95,9 @@ case class Actor(player: Player, table: Table) {
 
   def leaveTaken: Option[Action] = LeaveTaken.some
 
+  def dropSeries: Option[Action] = hasOpened.option(DropOpenSeries)
+  def dropPairs: Option[Action] = hasOpened.option(DropOpenPairs)
+
   lazy val minValidOpenSeriesScore: Int = table.opener flatMap (_.maxOpenSerieScore) getOrElse 100
 
   lazy val minValidOpenPairsScore: Int = table.opener flatMap (_.maxOpenPairScore) getOrElse 4
@@ -87,6 +106,8 @@ case class Actor(player: Player, table: Table) {
 
   lazy val hasOpenedPairs = table.hasOpenedPairs(side)
   lazy val hasOpenedSeries = table.hasOpenedSeries(side)
+
+  lazy val hasOpened = hasOpenedPairs || hasOpenedSeries
 
   def is(s: Side) = s == player.side
 

@@ -83,20 +83,24 @@ case class Table(
     }) toValid "No piece on board " + piece
   }
 
-  def dropSeries(side: Side, piece: Piece, updated: OpenSerie, at: Int, addOkey: Boolean = false): Valid[Table] = (for {
+  def dropSeries(side: Side, piece: Piece, updated: OpenSerie, at: OpenPos): Valid[Table] = (for {
     o1 <- opener toValid "No opener on table"
     b1 <- boards(side) take piece toValid s"No $piece to drop"
     b2 <- b1 place(okey) toValid s"unknown"
-    o2 = o1.updateSeries(updated, at)
+    o2 = o1.updateSeries(updated, at.group)
   } yield {
-    copy(boards = boards.withSide(side, addOkey.fold(b2, b1)), opener = o2)
+    val replaceBoard = at match {
+      case _:ReplaceOkey => b2
+      case _ => b1
+    }
+    copy(boards = boards.withSide(side, replaceBoard), opener = o2)
   })
 
-  def dropPairs(side: Side, piece: Piece, updated: OpenPair, at: Int): Valid[Table] = (for {
+  def dropPairs(side: Side, piece: Piece, updated: OpenPair, at: OpenPos): Valid[Table] = (for {
     o1 <- opener toValid "No opener on table"
     b1 <- boards(side) take piece toValid s"No $piece to drop"
     b2 <- b1 place(okey) toValid s"unknown"
-    o2 = o1.updatePairs(updated, at)
+    o2 = o1.updatePairs(updated, at.group)
   } yield {
     copy(boards = boards.withSide(side, b2), opener = o2)
   })
@@ -112,6 +116,10 @@ case class Table(
   def toDrawLeft(side: Side): Option[Piece] = discards(side previous).headOption
 
   def toCollectOpen(side: Side): Option[(Board, Opener)] = opener.flatMap (_.getSave)
+
+  def toOpenSerie(at: OpenPos): Option[OpenSerie] = opener flatMap (_.series.lift(at.group) map (_._2))
+
+  def toOpenPair(at: OpenPos): Option[OpenPair] = opener flatMap (_.pairs.lift(at.group) map (_._2))
 
   def opens(side: Side): Option[OpenState] = opener flatMap (_.opens(side))
 

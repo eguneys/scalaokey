@@ -74,11 +74,11 @@ Available moves
   - Open series
     - Open series
     - Collect open
-    - Process piece
+    - Drop piece
   - Open pairs
     - Open pairs
     - Collect open
-    - Process piece
+    - Drop piece
 - Draw left piece
   - Open series
   - Open pairs
@@ -93,7 +93,7 @@ Draw Left
 Leave taken
 open series (piece groups)
 collect open
-process (piece)
+drop open (piece) (group, at)
 
 ### FEN
 
@@ -199,3 +199,14 @@ get group
 replace
 (valid R1 R2 B4 R4 10)
 (valid R1 R2 R3 R4 10) drop R3 [replace okey]
+
+
+### Drop Opens
+
+Opened player can drop opens on other open groups
+Not opened player can't drop opens
+
+Drop Open Pair
+
+If someone opened pairs, other players can drop open their pairs
+
