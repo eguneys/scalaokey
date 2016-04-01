@@ -66,16 +66,15 @@ g1
 
     "hand sum" in {
       val situation = ("""
-r13
+r9
 r1r2
-r1r2r3
+r10r2r3
 g1g10g13
-l2
+l2f1f1
 """ as player)
 
       "sums hands" in {
         system.handSum(situation, WestSide) must_== 24
-        system.handSum(situation, NorthSide) must_== 2
         system.handSum(situation, SouthSide) must_== 0
       }
 
@@ -84,8 +83,8 @@ l2
       }
 
       "sums fake" in {
-        3 must_== 4
-      }.pendingUntilFixed
+        system.handSum(situation, NorthSide) must_== 22
+      }
     
     }
 
@@ -109,6 +108,13 @@ l2
 
         val situation = emptyEastSituation.withHistory(hist)
         system.flags(situation, EastSide) must_== List(HandOpenSome, EndByDiscardOkey, HandZero)
+      }
+
+      "dont give discard okey for fake discard" in {
+        val hist = History(DrawMiddle, Discard(F1)).withOpenStates(eastOpens(old = true, pairs = false))
+
+        val situation = emptyEastSituation.withHistory(hist)
+        system.flags(situation, EastSide) must_== List(HandOpenSome, HandZero)
       }
 
       "hand zero" in {

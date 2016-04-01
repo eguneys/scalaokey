@@ -76,6 +76,18 @@ class UciMoveTest extends OkeyTest {
       Uci.readList(Uci.writeList(ucis)) must beSome.like {
         case l => l.map(_.action) must_== moves
       }
+
+      "with fake" in {
+        val moves = List(Discard(F1), OpenSeries(List(F1, G1, R13)), OpenPairs(F1.w, G1.w))
+
+        val ucis = moves.map(_.toUci)
+
+        Uci.writeList(ucis) must_== "ddPf1/osGf1g1r13/opGf1f1 g1g1"
+
+        Uci.readList(Uci.writeList(ucis)) must beSome.like {
+          case l => l.map(_.action) must_== moves
+        }
+      }
     }
   }
 }

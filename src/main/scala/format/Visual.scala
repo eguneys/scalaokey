@@ -38,6 +38,8 @@ object Visual {
 
   val PieceR = """(r|l|g|b)([1-9][0-3]?)""".r
 
+  val PieceFakeR = """(r|l|g|b|f)([1-9][0-3]?)""".r
+
   def parseOwnedPieces(str: String): (Side, List[Piece]) = {
     val side = str(0) match {
       case SideR(s) => Side(s)
@@ -49,8 +51,9 @@ object Visual {
   }
 
   def parsePieces(str: String): List[Piece] = {
-    PieceR.findAllIn(str).toList map {
-      case PieceR(c, n) => Piece(Color(c(0)) get, n.toInt)
+    PieceFakeR.findAllIn(str).toList map {
+      case PieceFakeR("f", n) => Piece.F1
+      case PieceFakeR(c, n) => Piece(Color(c(0)) get, n.toInt)
     }
   }
 

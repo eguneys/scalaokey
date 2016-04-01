@@ -81,4 +81,23 @@ r1r2
 """, EastSide) must_== "/ r1r2  ///3r1/e"
     }
   }
+
+  "with fake" should {
+    val table = ("""
+r13
+f1r1g1
+f1g2g4
+
+
+
+f1g1
+
+
+
+ef1g1l1
+wf1f1
+""")
+
+    f.exportTable(table, EastSide) must_== "f1g2g4/f1g1   /f1g1l1/f1f1/3r13/e"
+  }
 }

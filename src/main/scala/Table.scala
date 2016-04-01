@@ -85,6 +85,7 @@ case class Table(
 
   def handSum(side: Side): Int = boards(side).pieceList.foldLeft(0) {
     case (acc, p) if p == okey => acc
+    case (acc, Piece.F1) => acc + okey.number
     case (acc, p) => acc + p.number
   }
 

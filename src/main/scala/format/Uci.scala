@@ -34,10 +34,12 @@ object Uci
     } yield Move(move, pieceS.flatMap(Piece byKey), pieceGroup)
 
     val PieceR = """(r|l|g|b)([1-9][0-3]?)""".r
+    val PieceFakeR = """(r|l|g|b|f)([1-9][0-3]?)""".r
 
     def parsePieces(str: String): Option[List[Piece]] = {
-      PieceR.findAllIn(str).toList map {
-        case PieceR(c, n) => Piece(Color(c(0)) get, n.toInt).some
+      PieceFakeR.findAllIn(str).toList map {
+        case PieceFakeR("f", n) => Piece.F1.some
+        case PieceFakeR(c, n) => Piece(Color(c(0)) get, n.toInt).some
         case _ => None
       }
     }.sequence
