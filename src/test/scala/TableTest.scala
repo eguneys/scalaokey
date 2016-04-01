@@ -290,6 +290,93 @@ r2r3r2
 """.leaveTaken(EastSide, R1) must beFailure
       }
 
+      "drop open pair replace okey" in {
+        val openPieces = List(R2.w, List(R1, B9), R3.w)
+        """
+r13
+
+r1r2r3r1b9r2r3b9
+
+
+
+
+
+
+
+wg4g5g6
+""".seqTable(_.openPairs(EastSide, openPieces),
+  _.dropPairs(EastSide, B9, OpenPair(B9.w, 1), 1)
+        ) must beSuccess.like {
+          case t =>
+            t.boards(EastSide) must havePieces(R1, R1)
+            t must haveOpenPairs(R2.w, B9.w, R3.w)
+        }
+      }
+
+      "drop open series replace okey" in {
+        val openPieces = List(R2.|>(3))
+        """
+r13
+
+r2r3r4r1b9g11
+
+
+
+
+
+
+
+wg4g5g6 sg10r1g12
+""".seqTable(_.openSeries(EastSide, openPieces),
+  _.dropSeries(EastSide, G11, OpenSerie(G10.|>(3), 33), 1, addOkey = true)
+        ) must beSuccess.like {
+          case t =>
+            t.boards(EastSide) must havePieces(R1, R1, B9)
+            t must haveOpenSeries(G4.|>(3), G10.|>(3), R2.|>(3))
+        }
+      }
+
+      "drop open series append" in {
+        val openPieces = List(R2.|>(3))
+        """
+r13
+
+r2r3r4r1b9g13
+
+
+
+
+
+
+
+wg4g5g6 sg10r1g12
+""".seqTable(_.openSeries(EastSide, openPieces),
+  _.dropSeries(EastSide, G13, OpenSerie(List(G10, R1, G12, G13), 46), 1)
+        ) must beSuccess.like {
+          case t =>
+            t.boards(EastSide) must havePieces(R1, B9)
+            t must haveOpenSeries(G4.|>(3), List(G10, R1, G12, G13), R2.|>(3))
+        }
+      }
+
+      "dont drop if no piece"  in {
+        val openPieces = List(R2.|>(3))
+        """
+r13
+
+r2r3r4r1b9g13
+
+
+
+
+
+
+
+wg4g5g6 sg10r1g12
+""".seqTable(_.openSeries(EastSide, openPieces),
+  _.dropSeries(EastSide, G9, OpenSerie(List(G9, G10, R1, G12), 42), 1)
+        ) must beFailure
+      }
     }
   }
 }

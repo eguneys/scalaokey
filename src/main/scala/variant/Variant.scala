@@ -7,6 +7,8 @@ abstract class Variant(
   val id: Int,
   val name: String) {
 
+  def dealer(side: Side): Dealer = StandardDealer(side)
+
   val scoringSystem: ScoringSystem
 
   def validMoves(situation: Situation): List[Action] = situation.actor.moves
@@ -28,7 +30,16 @@ abstract class Variant(
   def finalizeTable(table: Table, player: Player, action: Action): Table = table
 }
 
-case class Dealer(side: Side) {
+sealed trait Dealer {
+  val side: Side
+
+  val pieces: List[Piece]
+  val boards: Sides[Board]
+  val sign: Piece
+  val middles: List[Piece]
+}
+
+case class StandardDealer(side: Side) extends Dealer {
 
   def boardsCount = 21 * 4 + 1
 
@@ -54,7 +65,7 @@ case class Dealer(side: Side) {
   }
 }
 
-case class TestDealer(side: Side) {
+case class TestDealer(side: Side) extends Dealer {
 
   import Piece._
 
@@ -88,4 +99,5 @@ case class TestDealer(side: Side) {
 
 object Variant {
   val default = Standard
+  val test = StandardTest
 }

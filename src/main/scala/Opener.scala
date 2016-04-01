@@ -75,6 +75,26 @@ case class Opener(
     ))
   }
 
+  def updateSeries(serie: OpenSerie, at: Int): Option[Opener] = {
+    series.lift(at) map { case (side, oldSerie) =>
+      val newSeries = series.updated(at, side -> serie)
+
+      val openState = opens(side) match {
+        case Some(o: NewOpen) => Some(o.addScore(serie.score - oldSerie.score))
+        case x => x
+      }
+
+      copy(series = newSeries, opens = opens.withSide(side, openState))
+    }
+  }
+
+  def updatePairs(pair: OpenPair, at: Int): Option[Opener] = {
+    pairs.lift(at) map { oldPair =>
+      val newPairs = pairs.updated(at, oldPair._1 -> pair)
+      copy(pairs = newPairs)
+    }
+  }
+
   def commitOpen(side: Side): Option[Opener] = opens(side) match {
     case Some(a: NewOpen) => Some(copy(opens = opens.withSide(side, Some(a.commit))))
     case _ => None

@@ -201,5 +201,77 @@ sr10r10 wl10l10 sg10g10 sb10b10 wl10l10
         }
       }
     }
+
+    "drop update series" in {
+        val table = """
+r13
+
+
+
+
+
+
+
+
+
+er10l10g10b10 wr11l11g11b11 wr12l12g12b12 er13l13g13b13 er1r2r3r4
+sr10r10 wl10l10 sg10g10 sb10b10 wl10l10
+"""
+
+      (table.opener get).updateSeries(OpenSerie(R1.|>(5), 15), 4) must beSome.like {
+        case o =>
+          o.series.lift(4) must beSome((EastSide -> OpenSerie(R1.|>(5), 15)))
+          o.score(EastSide) must beSome(SerieScore(102))
+      }
+    }
+
+    "drop update pairs" in {
+        val table = """
+r13
+
+
+
+
+
+
+
+
+
+er10l10g10b10 wr11l11g11b11 wr12l12g12b12 er13l13g13b13 er1r2r3r4
+sr1r10 wl10l10 sg10g10 sb10b10 wl10l10
+"""
+
+      (table.opener get).updatePairs(OpenPair(R10.w, 1), 0) must beSome.like {
+        case o =>
+          o.pairs.lift(0) must beSome((SouthSide -> OpenPair(R10.w, 1)))
+          o.score(SouthSide) must beSome(PairScore(3))
+      }
+    }
+
+
+    "recalculate new open score on drop update" in {
+      opener.seqOpener(
+        _.openSeries(EastSide, series, board),
+        _.updateSeries(OpenSerie(R1.|>(4), 10), 0)
+      ) must beSome.like {
+        case o =>
+          o.series.lift(0) must beSome((EastSide -> OpenSerie(R1.|>(4), 10)))
+          o.score(EastSide) must beSome(SerieScore(48 + 4))
+      }
+    }
+
+    // sign R13  by default
+    "recalculate new open score on drop okey replace" in {
+      opener.seqOpener(
+        _.openSeries(EastSide, series, board),
+        _.openSeries(EastSide, List(List(R10, R1, R12)), board),
+        _.updateSeries(OpenSerie(R10.|>(3), 33), 2)
+      ) must beSome.like {
+        case o =>
+          o.series.lift(2) must beSome((EastSide -> OpenSerie(R10.|>(3), 33)))
+          o.score(EastSide) must beSome(SerieScore(48 + 33))
+      }
+    }
+
   }
 }

@@ -83,6 +83,24 @@ case class Table(
     }) toValid "No piece on board " + piece
   }
 
+  def dropSeries(side: Side, piece: Piece, updated: OpenSerie, at: Int, addOkey: Boolean = false): Valid[Table] = (for {
+    o1 <- opener toValid "No opener on table"
+    b1 <- boards(side) take piece toValid s"No $piece to drop"
+    b2 <- b1 place(okey) toValid s"unknown"
+    o2 = o1.updateSeries(updated, at)
+  } yield {
+    copy(boards = boards.withSide(side, addOkey.fold(b2, b1)), opener = o2)
+  })
+
+  def dropPairs(side: Side, piece: Piece, updated: OpenPair, at: Int): Valid[Table] = (for {
+    o1 <- opener toValid "No opener on table"
+    b1 <- boards(side) take piece toValid s"No $piece to drop"
+    b2 <- b1 place(okey) toValid s"unknown"
+    o2 = o1.updatePairs(updated, at)
+  } yield {
+    copy(boards = boards.withSide(side, b2), opener = o2)
+  })
+
   def handSum(side: Side): Int = boards(side).pieceList.foldLeft(0) {
     case (acc, p) if p == okey => acc
     case (acc, Piece.F1) => acc + okey.number
@@ -126,7 +144,7 @@ case class Table(
 
 object Table {
   def init(variant: Variant, player: Side = EastSide): Table = {
-    val dealer = okey.variant.TestDealer(player)
+    val dealer = variant.dealer(player)
     Table(
       boards = dealer.boards,
       middles = dealer.middles,

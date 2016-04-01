@@ -14,11 +14,10 @@ case class Actor(player: Player, table: Table) {
           table.toDrawMiddle(side) flatMap { p =>
             move(DrawMiddle(p)) { table.drawMiddle(side) }
           }
-        case DrawLeft => {
+        case DrawLeft =>
           table.toDrawLeft(side) flatMap { p =>
             move(DrawLeft(p)) { table.drawLeft(side) }
           }
-        }
         case LeaveTaken =>
           move(action) {
             player.drawLeft toValid "Not drawn left" flatMap (table.leaveTaken(side, _))

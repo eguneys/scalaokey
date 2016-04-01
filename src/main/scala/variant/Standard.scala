@@ -12,6 +12,15 @@ case object Standard extends Variant(
   override def finalizeTable(table: Table, player: Player, action: Action): Table = table
 }
 
+case object StandardTest extends Variant(
+  id = 1,
+  name = "StandardTest") {
+
+  val scoringSystem = StandardScoringSystem
+
+  override def dealer(side: Side) = TestDealer(side)
+}
+
 object StandardScoringSystem extends AbstractScoringSystem {
 
   import AbstractScoringSystem._

@@ -40,3 +40,10 @@ case class SerieScore(score: Int) extends OpenScore {
 case class PairScore(score: Int) extends OpenScore {
   def add(s: Int): PairScore = copy(score = score + s)
 }
+
+case class OpenPos(group: Int, isLeft: Boolean)
+
+case object OpenPos {
+  val Left = true
+  val Right = false
+}

@@ -156,5 +156,62 @@ class GrouperTest extends OkeyTest {
 
       grouper.pairs(List(F1, R3)) must beSome(OpenPair(List(F1, R3), 1))
     }
+
+    "drops new piece on open serie" in {
+      grouper.dropSeries(OpenSerie(List(G2, G3, G4), 9), G5, OpenPos.Right) must beSome(OpenSerie(List(G2, G3, G4, G5), 14))
+
+      grouper.dropSeries(OpenSerie(List(G2, G3, G4), 9), G1, OpenPos.Left) must beSome(OpenSerie(List(G1, G2, G3, G4), 10))
+    }
+
+    "drops new piece on open serie rainbow" in {
+      grouper.dropSeries(OpenSerie(List(G2, R2, B2), 6), L2, OpenPos.Left) must beSome(OpenSerie(List(L2, G2, R2, B2), 8))
+    }
+
+    // okey R3
+    "drops okey on open serie" in {
+      grouper.dropSeries(OpenSerie(List(G10, G11, G12), 33), R3, OpenPos.Left) must beSome(OpenSerie(List(R3, G10, G11, G12), 42))
+
+      grouper.dropSeries(OpenSerie(List(G10, G11, G12), 33), R3, OpenPos.Right) must beSome(OpenSerie(List(G10, G11, G12, R3), 46))
+    }
+
+    // fake R3
+    "drops fake on open serie" in {
+      grouper.dropSeries(OpenSerie(List(L3, G3, B3), 9), F1, OpenPos.Right) must beSome(OpenSerie(List(L3, G3, B3, F1), 12))
+
+      grouper.dropSeries(OpenSerie(List(R4, R5, R6), 15), F1, OpenPos.Left) must beSome(OpenSerie(List(F1, R4, R5, R6), 18))
+    }
+
+    "dont drop bad serie" in {
+      grouper.dropSeries(OpenSerie(List(G10, G11, G12, G13), 33), R3, OpenPos.Right) must beNone
+
+      grouper.dropSeries(OpenSerie(List(G1, L1, B1, R1), 4), L1, OpenPos.Right) must beNone
+
+      grouper.dropSeries(OpenSerie(List(G11, G12, G13), 35), R3, OpenPos.Right) must beNone
+    }
+
+    "replace okey on open serie" in {
+      grouper.dropOkeySeries(OpenSerie(List(L3, R3, G3), 9), B3) must beSome(OpenSerie(List(L3, B3, G3), 9))
+
+      grouper.dropOkeySeries(OpenSerie(List(R3, L11, L12), 33), L10) must beSome(OpenSerie(List(L10, L11, L12), 33))
+    }
+
+    "replace okey with fake" in {
+      grouper.dropOkeySeries(OpenSerie(List(L3, R3, G3), 9), F1) must beSome(OpenSerie(List(L3, F1, G3), 9))
+    }
+
+    "dont replace bad serie" in {
+      grouper.dropOkeySeries(OpenSerie(List(L3, R3, G3), 9), G4) must beNone
+
+      grouper.dropOkeySeries(OpenSerie(List(R3, L11, L12), 33), L13) must beNone
+    }
+
+    "replace okey on open pair" in {
+      grouper.dropOkeyPairs(OpenPair(List(L3, R3), 1), L3) must beSome(OpenPair(List(L3, L3), 1))
+      grouper.dropOkeyPairs(OpenPair(List(R3, G1), 1), G1) must beSome(OpenPair(List(G1, G1), 1))
+    }
+
+    "dont replace bad open pair" in {
+      grouper.dropOkeyPairs(OpenPair(List(R3, G1), 1), G2) must beNone
+    }
   }
 }
