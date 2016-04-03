@@ -43,8 +43,29 @@ case class PairScore(score: Int) extends OpenScore {
 
 sealed trait OpenPos {
   val group: Int
+  val key: String
+
+  override def toString = key + group
 }
 
-case class AppendLeft(group: Int) extends OpenPos
-case class AppendRight(group: Int) extends OpenPos
-case class ReplaceOkey(group: Int) extends OpenPos
+case class AppendLeft(group: Int) extends OpenPos {
+  val key = "l"
+}
+case class AppendRight(group: Int) extends OpenPos {
+  val key = "r"
+}
+case class ReplaceOkey(group: Int) extends OpenPos {
+  val key = "p"
+}
+
+object OpenPos {
+
+  val PosR = """(l|r|p)(\d\d?)""".r
+
+  def apply(str: String): Option[OpenPos] = str match {
+    case PosR("l", group) => AppendLeft(group.toInt).some
+    case PosR("r", group) => AppendRight(group.toInt).some
+    case PosR("p", group) => ReplaceOkey(group.toInt).some
+    case _ => None
+  }
+}

@@ -45,9 +45,11 @@ sealed trait Action {
 
   def withPieceGroup(group: PieceGroups): Action = this
 
+  def withDrop(piece: Piece, pos: OpenPos): Action = this
+
   val key: String = toSingle.key
 
-  def toUci: Uci = Uci.Move(this, None, None)
+  def toUci: Uci = Uci.Move(this)
 }
 
 case object DrawLeft extends Action {
@@ -90,51 +92,55 @@ case object LeaveTaken extends Action {
 
 case object DropOpenSeries extends Action {
   override val key = "dos"
+
+  override def withDrop(piece: Piece, pos: OpenPos) = DropOpenSeries(piece, pos)
 }
 
 case object DropOpenPairs extends Action {
   override val key = "dop"
+
+  override def withDrop(piece: Piece, pos: OpenPos) = DropOpenPairs(piece, pos)
 }
 
 case class DropOpenSeries(piece: Piece, pos: OpenPos) extends Action {
   override def toSingle = DropOpenSeries
 
-  override def toUci: Uci = Uci.Move(this, Some(piece), None)
+  override def toUci: Uci = Uci.Move(this, piece = Some(piece), openPos = Some(pos))
 }
 
 case class DropOpenPairs(piece: Piece, pos: OpenPos) extends Action {
   override def toSingle = DropOpenPairs
 
-  override def toUci: Uci = Uci.Move(this, Some(piece), None)
+  override def toUci: Uci = Uci.Move(this, Some(piece), openPos = Some(pos))
 }
 
 case class DrawMiddle(piece: Piece) extends Action {
   override def toSingle = DrawMiddle
 
-  override def toUci: Uci = Uci.Move(this, Some(piece), None)
+  override def toUci: Uci = Uci.Move(this, piece = Some(piece))
 }
 
 case class DrawLeft(piece: Piece) extends Action {
   override def toSingle = DrawLeft
 
-  override def toUci: Uci = Uci.Move(this, Some(piece), None)
+  override def toUci: Uci = Uci.Move(this, piece = Some(piece))
 }
 
 case class Discard(piece: Piece) extends Action {
   override def toSingle = Discard
 
-  override def toUci: Uci = Uci.Move(this, Some(piece), None)
+  override def toUci: Uci = Uci.Move(this, piece = Some(piece))
 }
 
 case class OpenSeries(pieces: PieceGroups) extends Action {
   override def toSingle = OpenSeries
 
-  override def toUci: Uci = Uci.Move(this, None, Some(pieces))
+  override def toUci: Uci = Uci.Move(this, group = Some(pieces))
 }
 case class OpenPairs(pieces: PieceGroups) extends Action {
   override def toSingle = OpenPairs
 
-  override def toUci: Uci = Uci.Move(this, None, Some(pieces))
+  override def toUci: Uci = Uci.Move(this, group = Some(pieces))
 }
 
 case class CollectOpen(save: (Board, Opener)) extends Action {
@@ -143,7 +149,7 @@ case class CollectOpen(save: (Board, Opener)) extends Action {
 
 
 object Action {
-  lazy val all: List[Action] = List(DrawLeft, DrawMiddle, Discard, OpenSeries, OpenPairs, CollectOpen, LeaveTaken)
+  lazy val all: List[Action] = List(DrawLeft, DrawMiddle, Discard, OpenSeries, OpenPairs, CollectOpen, LeaveTaken, DropOpenSeries, DropOpenPairs)
 
   def byKey(key: String) = allKeys get key
 
