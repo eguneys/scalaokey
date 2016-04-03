@@ -89,6 +89,36 @@ er4r5r6 wg9g10g11
 """)
     }
 
+    "allow drop open fake" in {
+      val game = situationToGame("""
+r13
+l1l2
+r7r13r13r8r9f1
+
+
+
+
+
+
+
+er4r5r6 wr2r3r4
+""" as player)
+
+      game playMoves(EastSide, DropOpenSeries(F1, AppendLeft(1))) must beGame("""
+r13
+l1l2
+r7r13r13r8r9
+
+
+
+
+
+
+
+er4r5r6 wf1r2r3r4
+""")
+    }
+
 
     "allow drop open series if opened pairs" in {
       val game = situationToGame("""
