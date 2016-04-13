@@ -5,7 +5,10 @@ import scala.util.Random
 
 abstract class Variant(
   val id: Int,
-  val name: String) {
+  val key: String,
+  val name: String,
+  val shortName: String,
+  val title: String) {
 
   def dealer(side: Side): Dealer = StandardDealer(side)
 
@@ -100,4 +103,11 @@ case class TestDealer(side: Side) extends Dealer {
 object Variant {
   val default = Standard
   val test = StandardTest
+
+  val all = List(Standard)
+  val byId = all map { v => (v.id, v) } toMap
+  val byKey = all map { v => (v.key, v) } toMap
+
+  def apply(id: Int): Option[Variant] = byId get id
+  def orDefault(id: Int): Variant = apply(id) | default
 }
