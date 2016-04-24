@@ -87,9 +87,9 @@ case class TestDealer(side: Side) extends Dealer {
       (s == side) fold((pieces head) :: ps, ps)
 
     val extra = List(G1, L8)
-    val east = List(extra, Piece.<>(10), Piece.<>(10), Piece.<>(5), R1.|>(3)).flatten
-    val west = List(extra, Piece.<>(10), Piece.<>(10), Piece.<>(8)).flatten
-    val north = List(extra, R1.w, R2.w, R3.w, R4.w, R5.w).flatten
+    val east = List(extra, R1.w, R2.w, R3.w, R4.w, R5.w).flatten
+    val west = List(extra, Piece.<>(10), Piece.<>(10), Piece.<>(5), R1.|>(3)).flatten
+    val north = List(extra, Piece.<>(10), Piece.<>(10), Piece.<>(8)).flatten
     val south = List(extra, L1.w, L2.w, L3.w, L4.w, L5.w, L6.w).flatten
 
     Sides(

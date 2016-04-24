@@ -6,9 +6,9 @@ import okey.{ ScoringSystem => AbstractScoringSystem }
 case object Standard extends Variant(
   id = 1,
   key = "standard",
-  name = "Standard",
-  shortName ="Std",
-  title = "Standard rules of okey") {
+  name = "101 Okey",
+  shortName ="101",
+  title = "101 Okey") {
 
   val scoringSystem = StandardScoringSystem
 
