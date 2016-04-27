@@ -9,7 +9,8 @@ case class History(
 
   def withLastMove(move: Action) = copy(lastMoves = List(move.toUci))
 
-  def addLastMove(move: Action) = copy(lastMoves = move.toUci :: lastMoves)
+  def addLastMove(move: Action) = copy(lastMoves =
+    lastMoves :+ move.toUci)
 
   def withOpenStates(oopener: Option[Opener]) = oopener.fold(this) { opener =>
     copy(openStates = opener.opens map Opens.apply)
