@@ -26,7 +26,13 @@ abstract class Variant(
     } yield m1
   }
 
-  def winner(situation: Situation): Option[Side] = None
+  def winner(situation: Situation): Option[Side] =
+    situation.endScores map { scores =>
+      (scores zip Side.all).reduce[(EndScoreSheet, Side)] {
+        case (s1, s2) if s1._1.total < s2._1.total => s1
+        case (_, s2) => s2
+      }._2
+    }
 
   def endScores(situation: Situation): Option[Sides[EndScoreSheet]] = situation.end option Sides(scoringSystem.sheet(situation, _))
 

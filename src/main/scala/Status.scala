@@ -12,9 +12,10 @@ object Status {
   case object Created extends Status(10)
   case object Started extends Status(20)
   case object Aborted extends Status(25) // from this point game is finished
-  case object End extends Status(30)
+  case object NormalEnd extends Status(30)
+  case object MiddleEnd extends Status(60)
 
-  val all = List(Created, Started, Aborted, End)
+  val all = List(Created, Started, Aborted, NormalEnd, MiddleEnd)
 
   val byId = all map { v => (v.id, v) } toMap
 
