@@ -31,15 +31,24 @@ r1
 """ as player)
 
       "by middle" in {
-        ("""
-r13
-""" as player).middleEnd must beTrue
 
         ("""
 r13
 r1
 """ as player).middleEnd must beFalse
+
+        "dont end before discard" in {
+          ("""
+r13
+""" as player).middleEnd must beFalse
+        }
+
+        ("""
+r13
+""" as player withHistory discardHistory).middleEnd must beTrue
+
       }
+
 
       "by normal" in {
         "no discard" in {

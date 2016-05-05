@@ -20,7 +20,7 @@ case class Situation(table: Table, player: Player) {
   lazy val lastSideOpens = openStates(lastSide)
   lazy val opensSize = openStates.flatten.toList length
 
-  def middleEnd: Boolean = table.middles.isEmpty
+  def middleEnd: Boolean = lastDiscard.isDefined && table.middles.isEmpty
 
   def normalEnd: Boolean = lastDiscard.isDefined && table.boards(lastSide).isEmpty
 
