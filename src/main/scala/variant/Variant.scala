@@ -10,6 +10,10 @@ abstract class Variant(
   val shortName: String,
   val title: String) {
 
+  def standard = this == Standard
+
+  def exotic = !standard
+
   def dealer(side: Side): Dealer = StandardDealer(side)
 
   val scoringSystem: ScoringSystem
@@ -110,7 +114,7 @@ object Variant {
   val default = Standard
   val test = StandardTest
 
-  val all = List(Standard)
+  val all = List(Standard, StandardTest)
   val byId = all map { v => (v.id, v) } toMap
   val byKey = all map { v => (v.key, v) } toMap
 

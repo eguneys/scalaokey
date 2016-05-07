@@ -93,7 +93,11 @@ case class Actor(player: Player, table: Table) {
     case _ => None
   }
 
-  def leaveTaken: Option[Action] = LeaveTaken.some
+  def leaveTaken: Option[Action] = table.opens(side) match {
+    case Some(_:NewOpen) => LeaveTaken.some
+    case Some(_:OldOpen) => None
+    case None => LeaveTaken.some
+  }
 
   def dropSeries: Option[Action] = hasOpened.option(DropOpenSeries)
   def dropPairs: Option[Action] = hasOpened.option(DropOpenPairs)
