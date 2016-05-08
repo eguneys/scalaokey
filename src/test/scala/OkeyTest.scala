@@ -40,6 +40,8 @@ trait OkeyTest extends Specification
       }
       vg
     }
+
+    def withClock(c: Clock) = game.copy(clock = Some(c))
   }
 
   def situationToGame(situation: Situation) = {

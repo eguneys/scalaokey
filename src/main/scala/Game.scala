@@ -3,6 +3,7 @@ package okey
 case class Game(
   table: Table,
   player: Player = Player(EastSide, drawMiddle = true),
+  clock: Option[Clock] = None,
   turns: Int = 0) {
 
   def apply(side: Side, action: Action): Valid[(Game, Move)] = situation.move(side, action) map { move =>
@@ -18,10 +19,21 @@ case class Game(
     val newGame = copy(
       table = move.finalizeAfter,
       player = move.finalizePlayer,
-      turns = newTurns
+      turns = newTurns,
+      clock = applyClock(move)
     )
 
     newGame
+  }
+
+  private def applyClock(move: Move) = clock map {
+    case c: RunningClock =>
+      move.action match {
+        case _:Discard => c.step.emptyTime(player.side)
+        case _ => c.stepPly
+      }
+    case c: PausedClock if (turns == 0) => c.start.switch
+    case c => c.switch
   }
 
   lazy val situation = Situation(table, player)
