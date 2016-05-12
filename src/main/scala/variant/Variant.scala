@@ -38,6 +38,8 @@ abstract class Variant(
       }._2
     }
 
+  def endStanding(situation: Situation): Option[Sides[Int]] = situation.endScores map Variant.endStanding
+
   def endScores(situation: Situation): Option[Sides[EndScoreSheet]] = situation.end option Sides(scoringSystem.sheet(situation, _))
 
   def finalizeTable(table: Table, player: Player, action: Action): Table = table
@@ -120,4 +122,12 @@ object Variant {
 
   def apply(id: Int): Option[Variant] = byId get id
   def orDefault(id: Int): Variant = apply(id) | default
+
+
+  def endStanding(scores: Sides[EndScoreSheet]): Sides[Int] = {
+    val totals = scores map (_.total)
+    Side.all map { side =>
+      { totals count (_ < scores(side).total) } + 1
+    }
+  }
 }

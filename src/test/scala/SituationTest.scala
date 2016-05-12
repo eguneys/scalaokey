@@ -67,6 +67,35 @@ r13
         }
       }
 
+      "find standings" in {
+        import okey.variant.Variant
+        import ScoringSystem._
+
+        val system = okey.variant.StandardScoringSystem
+        def makeSheet(handSum: Int, flags: Flag*): EndScoreSheet =
+          EndScoreSheet(handSum, flags map (f => f -> system.scorer(f, flags toList)) toMap)
+
+        "all different" in {
+          val scores = Sides(
+            makeSheet(0, HandOpenSome),
+            makeSheet(10, HandOpenSome),
+            makeSheet(50,  HandOpenSome),
+            makeSheet(40, HandOpenSome))
+
+          Variant.endStanding(scores) must_== Sides(1, 2, 4, 3)
+        }
+
+        "same" in {
+          val scores = Sides(
+            makeSheet(0, HandOpenSome),
+            makeSheet(0, HandOpenSome),
+            makeSheet(50,  HandOpenSome),
+            makeSheet(40, HandOpenSome))
+
+          Variant.endStanding(scores) must_== Sides(1, 1, 4, 3)
+        }
+      }
+
       "by discard okey" in {
         val situationR13 = ("""
 r13

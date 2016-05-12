@@ -135,7 +135,14 @@ object Sides {
     } yield Sides(east, west, north, south)
   }
 
-
+  implicit def richSidesOption[A](sides: Sides[Option[A]]) = new {
+    def sequenceSides: Option[Sides[A]] = for {
+      east <- sides.eastSide
+      west <- sides.westSide
+      north <- sides.northSide
+      south <- sides.southSide
+    } yield Sides(east, west, north, south)
+  }
 
   implicit def fromIterable[A](l: Iterable[A]): Sides[A] = {
     val i = l.iterator
