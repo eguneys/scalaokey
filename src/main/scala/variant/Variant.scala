@@ -11,6 +11,7 @@ abstract class Variant(
   val title: String) {
 
   def standard = this == Standard
+  def yuzbir = this == Standard || this == StandardTest
 
   def exotic = !standard
 

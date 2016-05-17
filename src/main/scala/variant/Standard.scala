@@ -5,10 +5,10 @@ import okey.{ ScoringSystem => AbstractScoringSystem }
 
 case object Standard extends Variant(
   id = 1,
-  key = "standard",
+  key = "yuzbir",
   name = "101 Okey",
   shortName ="101",
-  title = "101 Okey") {
+  title = "101'i geç, elini aç, en düşük puanı al, kazan.") {
 
   val scoringSystem = StandardScoringSystem
 
@@ -17,7 +17,7 @@ case object Standard extends Variant(
 
 case object StandardTest extends Variant(
   id = 2,
-  key = "standardtest",
+  key = "yuzbirtest",
   name = "StandardTest",
   shortName ="StdTest",
   title = "Standard Test rules of okey") {
