@@ -67,6 +67,17 @@ r13
         }
       }
 
+      "find winner" in {
+        "no winner if middle end" in {
+          val situation = ("""
+r13
+""" as player withHistory discardHistory)
+
+          situation.winner must beNone
+
+        }
+      }
+
       "find standings" in {
         import okey.variant.Variant
         import ScoringSystem._

@@ -32,12 +32,14 @@ abstract class Variant(
   }
 
   def winner(situation: Situation): Option[Side] =
-    situation.endScores map { scores =>
-      (scores zip Side.all).reduce[(EndScoreSheet, Side)] {
-        case (s1, s2) if s1._1.total < s2._1.total => s1
-        case (_, s2) => s2
-      }._2
-    }
+    if (situation.middleEnd) None
+    else
+      situation.endScores map { scores =>
+        (scores zip Side.all).reduce[(EndScoreSheet, Side)] {
+          case (s1, s2) if s1._1.total < s2._1.total => s1
+          case (_, s2) => s2
+        }._2
+      }
 
   def endStanding(situation: Situation): Option[Sides[Int]] = situation.endScores map Variant.endStanding
 
