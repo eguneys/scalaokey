@@ -47,6 +47,12 @@ case class Table(
   }) toValid "No piece on board " + piece
 
 
+  def discardEndToValid(side: Side, groups: List[Piece]): Valid[Table] = (for {
+    b1 <- boards(side) take groups
+    if b1.size == 1
+  } yield copy(boards.withSide(side, b1))) toValid "Invalid pieces to discard end"
+
+
   def openSeries(side: Side, groups: List[OpenSerie]): Valid[Table] = (for {
     b1 <- boards(side) take (groups.map(_.pieces).flatten)
     o1 <- opener
@@ -131,6 +137,8 @@ case class Table(
 
   // def hasOpenedPairs(side: Side): Boolean =  !(opener ?? { _.pairsOf(side) isEmpty })
 
+  def hasOpener: Boolean = opener.isDefined
+
   def hasOpenedSeries(side: Side): Boolean = opener ?? {
     _.score(side) match {
       case Some(_:SerieScore) => true
@@ -161,7 +169,7 @@ object Table {
       boards = dealer.boards,
       middles = dealer.middles,
       sign = dealer.sign,
-      opener = Some(Opener empty),
+      opener = variant.hasOpener option (Opener empty),
       variant = variant
     )
   }

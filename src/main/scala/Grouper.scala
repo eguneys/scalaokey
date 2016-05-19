@@ -32,7 +32,7 @@ sealed abstract class Grouper(sign: Piece)
     pieces.map(group => pairs(group)).sequence
 }
 
-case class StandardGrouper(sign: Piece) extends Grouper(sign) {
+case class StandardGrouper(sign: Piece, withTore: Boolean = false) extends Grouper(sign) {
 
   case class PieceRef(piece: Piece, fake: Boolean = false) {
     def isOkey: Boolean = piece == okey && !fake
@@ -127,10 +127,14 @@ case class StandardGrouper(sign: Piece) extends Grouper(sign) {
     } getOrElse false
   }
 
+  private def torr(pieces: List[Piece]): List[Piece] =
+    withTore.fold(pieces :+ pieces.head, pieces)
+
+
   lazy val allNumbers: Map[Color, List[Piece]] = Map(
-    Red -> Piece.allRed,
-    Black -> Piece.allBlack,
-    Green -> Piece.allGreen,
-    Blue -> Piece.allBlue
+    Red -> torr(Piece.allRed),
+    Black -> torr(Piece.allBlack),
+    Green -> torr(Piece.allGreen),
+    Blue -> torr(Piece.allBlue)
   )
 }

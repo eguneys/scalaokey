@@ -15,6 +15,10 @@ abstract class Variant(
 
   def exotic = !standard
 
+  def hasOpener: Boolean = true
+
+  def specialEnd(situation: Situation): Boolean = false
+
   def dealer(side: Side): Dealer = StandardDealer(side)
 
   val scoringSystem: ScoringSystem
@@ -48,7 +52,7 @@ abstract class Variant(
   def finalizeTable(table: Table, player: Player, action: Action): Table = table
 }
 
-sealed trait Dealer {
+trait Dealer {
   val side: Side
 
   val pieces: List[Piece]

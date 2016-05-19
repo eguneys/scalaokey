@@ -68,6 +68,22 @@ case object Discard extends Action {
   override def withPiece(piece: Piece) = Discard(piece)
 }
 
+case object DiscardEndSeries extends Action {
+  def apply(pieces: List[Piece]*): DiscardEndSeries = DiscardEndSeries(pieces toList)
+
+  override val key = "dds"
+
+  override def withPieceGroup(group: PieceGroups) = OpenSeries(group)
+}
+
+case object DiscardEndPairs extends Action {
+  def apply(pieces: List[Piece]*): DiscardEndPairs = DiscardEndPairs(pieces toList)
+
+  override val key = "ddp"
+
+  override def withPieceGroup(group: PieceGroups) = OpenPairs(group)
+}
+
 case object OpenSeries extends Action {
   def apply(pieces: List[Piece]*): OpenSeries = OpenSeries(pieces toList)
 
@@ -130,6 +146,18 @@ case class Discard(piece: Piece) extends Action {
   override def toSingle = Discard
 
   override def toUci: Uci = Uci.Move(this, piece = Some(piece))
+}
+
+case class DiscardEndSeries(pieces: PieceGroups) extends Action {
+  override def toSingle = DiscardEndSeries
+
+  override def toUci: Uci = Uci.Move(this, group = Some(pieces))
+}
+
+case class DiscardEndPairs(pieces: PieceGroups) extends Action {
+  override def toSingle = DiscardEndPairs
+
+  override def toUci: Uci = Uci.Move(this, group = Some(pieces))
 }
 
 case class OpenSeries(pieces: PieceGroups) extends Action {

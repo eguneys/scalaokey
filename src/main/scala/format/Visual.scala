@@ -62,6 +62,30 @@ object Visual {
     case l => l toList
   }
 
+  def <<?(variant: okey.variant.Variant, source: String): Table = {
+    val lines = source.lines.toList drop 1
+    val filtered = lines.size match {
+      case 12 => lines
+      case n if n > 12 => lines take 12
+      case n => lines ::: (List.fill(12 - n)(""))
+    }
+
+    filtered.take(10) map parsePieces match {
+      case List(sign) :: middles :: east :: west :: north :: south ::
+          deast :: dwest :: dnorth :: dsouth :: Nil =>
+
+        Table(
+          boards = Sides(east, west, north, south).map(Board.apply),
+          discards = Sides(deast, dwest, dnorth, dsouth),
+          sign = sign,
+          middles = middles,
+          opener = None,
+          variant = variant)
+      case _ => throw new Exception("Invalid visual format " + source)
+    }
+  }
+
+
   def <<(source: String): Table = {
     val lines = source.lines.toList drop 1
     val filtered = lines.size match {
@@ -110,7 +134,7 @@ object Visual {
     val middles = table.middles mkString
 
     val opens = table.opener.fold("") { opener =>
-      (opener.series map {
+      "\n" + (opener.series map {
         case (owner, s) => owner.letter + s.pieces.mkString
       } mkString " ") + "\n" +
       (opener.pairs map {
@@ -118,7 +142,7 @@ object Visual {
       } mkString " ")
     }
 
-    List(sign, middles, boards, discards, opens) mkString "\n"
+    (List(sign, middles, boards, discards) mkString "\n") + opens
   }
 
   def addNewLines(str: String) = "\n" + str + "\n"

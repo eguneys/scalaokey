@@ -20,6 +20,16 @@ case class Situation(table: Table, player: Player) {
   lazy val lastSideOpens = openStates(lastSide)
   lazy val opensSize = openStates.flatten.toList length
 
+  lazy val lastDiscardEnd = lastMoves collectFirst {
+    case _:DiscardEndSeries => DiscardEndSeries
+    case _:DiscardEndPairs => DiscardEndPairs
+  }
+
+  lazy val lastDiscardEndPiece = {
+    val board = table.boards(player.side)
+    ((board.size == 1) option board.pieceList.headOption) flatten
+  }
+
   def middleEnd: Boolean = lastDiscard.isDefined && table.middles.isEmpty
 
   def normalEnd: Boolean = lastDiscard.isDefined && table.boards(lastSide).isEmpty
@@ -30,7 +40,15 @@ case class Situation(table: Table, player: Player) {
 
   def okeyEnd: Boolean = normalEnd && lastDiscard.exists (_ == okey)
 
-  def end: Boolean = middleEnd || normalEnd
+  def duzNormalEnd: Boolean = lastDiscardEnd.exists (_== DiscardEndSeries)
+
+  def duzPairEnd: Boolean = lastDiscardEnd.exists (_== DiscardEndPairs)
+
+  def duzOkeyEnd: Boolean = lastDiscardEnd.isDefined && lastDiscardEndPiece.exists(_ == okey)
+
+  def variantEnd: Boolean = table.variant specialEnd this
+
+  def end: Boolean = middleEnd || normalEnd || variantEnd
 
   def endScores: Option[Sides[EndScoreSheet]] = table.variant.endScores(this)
 

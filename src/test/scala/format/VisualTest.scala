@@ -19,6 +19,19 @@ class VisualTest extends OkeyTest {
         f.addNewLines(f >> (f << example)) must_== example
       }
     }
+
+    "export table with no opener" in {
+      f.addNewLines(f >> (duzOkeyTable)) must_== duzOkeyFormat
+    }
+    "import table with no opener" in {
+      f <<?(okey.variant.DuzOkey, duzOkeyFormat) must_== duzOkeyTable
+    }
+
+    "import and export is non destructive" in {
+      forall(List(duzOkeyFormat)) { example =>
+        f.addNewLines(f >> (f <<?(okey.variant.DuzOkey, example))) must_== example
+      }
+    }
   }
 
   val newTable = makeTable(R1, L1, G1, B1, R13, R2)
@@ -35,6 +48,20 @@ g1
 b1
 er10l10g10b10 wr11l11g11b11 wr12l12g12b12
 sr10r10 sl10l10 sg10g10 sb10b10
+"""
+
+  val duzOkeyTable = makeTable(R1, L1, G1, B1, R13, R2, okey.variant.DuzOkey)
+  val duzOkeyFormat = """
+r13
+r2r2r2r2r2r2r2r2r2r2r2r2r2r2r2r2r2r2
+r1r1r1r1r1r1r1r1r1r1r1r1r1r1r1r1r1r1r1r1r1r1
+l1l1l1l1l1l1l1l1l1l1l1l1l1l1l1l1l1l1l1l1l1
+g1g1g1g1g1g1g1g1g1g1g1g1g1g1g1g1g1g1g1g1g1
+b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1
+r1
+l1
+g1
+b1
 """
 
   val examples = Seq(newTableFormat,

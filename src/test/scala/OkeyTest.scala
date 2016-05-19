@@ -13,6 +13,14 @@ import scalaz.{ Validation => V }
 trait OkeyTest extends Specification
     with ValidationMatchers {
 
+  def stringToDuzOkey(str: String): Table = Visual <<?(okey.variant.DuzOkey, str)
+
+  def stringToDuzOkeySituation(str: String) = new {
+    def as(player: Player): Situation = Situation(Visual <<?(okey.variant.DuzOkey, str), player)
+  }
+
+  def makeDuzOkeyGame(str: String, player: Player) = situationToGame(stringToDuzOkeySituation(str) as player)
+
   implicit def stringToTable(str: String): Table = Visual << str
 
   implicit def stringToSituationBuilder(str: String) = new {
@@ -52,10 +60,15 @@ trait OkeyTest extends Specification
 
   def makeTable: Table = Table init okey.variant.Standard
 
+  def makeDuzOkey: Table = Table init okey.variant.DuzOkey
+
+  def makeDuzOkey(side: Side): Table =
+    Table init(okey.variant.DuzOkey, side)
+
   def makeTable(side: Side): Table =
     Table init(okey.variant.Standard, side)
 
-  def makeTable(east: Piece, west: Piece, north: Piece, south: Piece, sign: Piece, middle: Piece): Table = {
+  def makeTable(east: Piece, west: Piece, north: Piece, south: Piece, sign: Piece, middle: Piece, variant: okey.variant.Variant = okey.variant.Standard): Table = {
     val grouper = StandardGrouper(sign)
     Table(
       boards = Sides(
@@ -70,7 +83,7 @@ trait OkeyTest extends Specification
         List(south)
       ),
       middles = List.fill(18)(middle),
-      opener = Some(Opener(List(
+      opener = variant.hasOpener option Opener(List(
         EastSide -> grouper.series(Piece.<>(10)).get,
         WestSide -> grouper.series(Piece.<>(11)).get,
         WestSide -> grouper.series(Piece.<>(12)).get
@@ -84,9 +97,9 @@ trait OkeyTest extends Specification
           eastSide = OldOpen(SerieScore(40)).some,
           westSide = OldOpen(SerieScore(44 + 48)).some,
           southSide = OldOpen(PairScore(4)).some,
-          northSide = None))),
+          northSide = None)),
       sign = sign,
-      variant = variant.Standard)
+      variant = variant)
   }
 
   def makeOpener: Opener = Opener empty

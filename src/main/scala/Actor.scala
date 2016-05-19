@@ -36,6 +36,14 @@ case class Actor(player: Player, table: Table) {
           }
         case Discard(piece) =>
           move(action) { table.discard(side, piece) }
+        case DiscardEndPairs(pieces) =>
+          duzGrouper.pairsSeq(pieces) flatMap { pairs =>
+            move(action) { table.discardEndToValid(side, pairs flatMap (_.pieces)) }
+          }
+        case DiscardEndSeries(pieces) =>
+          duzGrouper.seriesSeq(pieces) flatMap { series =>
+            move(action) { table.discardEndToValid(side, series flatMap (_.pieces)) }
+          }
         case DropOpenSeries(piece, pos) =>
           table.toOpenSerie(pos) flatMap { serie =>
             grouper.dropSeries(serie, piece, pos) flatMap { updated =>
@@ -58,6 +66,8 @@ case class Actor(player: Player, table: Table) {
 
   lazy val grouper: Grouper = StandardGrouper(table.sign)
 
+  lazy val duzGrouper: Grouper = StandardGrouper(table.sign, withTore = true)
+
   lazy val moves: List[Action] = player.drawPiece fold(afterDraw, draw)
 
   def draw: List[Action] = List(drawMiddle, drawLeft) flatten
@@ -65,10 +75,16 @@ case class Actor(player: Player, table: Table) {
   def drawMiddle: Option[Action] = table.drawMiddle(side).toOption map const(DrawMiddle)
   def drawLeft: Option[Action] = table.drawLeft(side).toOption map const(DrawLeft)
 
-  def afterDraw: List[Action] = player.drawMiddle.fold(
+  def afterDraw: List[Action] = table.hasOpener.fold(
+    afterDrawWithOpener,
+    afterDrawNoOpener)
+
+  def afterDrawWithOpener: List[Action] = player.drawMiddle.fold(
     afterDrawMiddle,
     afterDrawLeft
   )
+
+  def afterDrawNoOpener: List[Action] = discardEnds ::: (List(discardMiddle) flatten)
 
   def afterDrawMiddle: List[Action] = List(discardMiddle, openSeries, openPairs, collectOpen, dropSeries, dropPairs) flatten
 
@@ -76,6 +92,8 @@ case class Actor(player: Player, table: Table) {
 
   def discardLeft: Option[Action] = discard(true)
   def discardMiddle: Option[Action] = discard(false)
+
+  def discardEnds: List[Action] = List(DiscardEndSeries, DiscardEndPairs)
 
   def discard(withLeft: Boolean): Option[Action] = table.opens(side) match {
     case Some(NewOpen(SerieScore(score), _, _)) if (score > minValidOpenSeriesScore) => Discard.some
