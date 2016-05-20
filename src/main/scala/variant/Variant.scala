@@ -52,28 +52,22 @@ abstract class Variant(
   def finalizeTable(table: Table, player: Player, action: Action): Table = table
 }
 
+// TODO FIXME dont allow fake okey to be sign
 trait Dealer {
-  val side: Side
 
-  val pieces: List[Piece]
-  val boards: Sides[Board]
-  val sign: Piece
-  val middles: List[Piece]
-}
+  val nbEach: Int
 
-case class StandardDealer(side: Side) extends Dealer {
-
-  def boardsCount = 21 * 4 + 1
+  def nbBoards = nbEach * 4 + 1
 
   lazy val pieces: List[Piece] = Random.shuffle(Piece.initial)
 
-  lazy val boards: Sides[Board] = dealBoards(21)
+  lazy val sign: Piece = pieces(nbBoards)
 
-  lazy val sign: Piece = pieces(boardsCount)
+  lazy val middles: List[Piece] = pieces drop (nbBoards + 1)
 
-  lazy val middles: List[Piece] = pieces drop (boardsCount + 1)
+  lazy val boards: Sides[Board] = dealBoards(nbEach)
 
-  private[variant] def dealBoards(count: Int): Sides[Board] = {
+  def dealBoards(count: Int): Sides[Board] = {
     def withExtra(ps: List[Piece], s: Side):List[Piece] =
       (s == side) fold((pieces head) :: ps, ps)
 
@@ -85,23 +79,23 @@ case class StandardDealer(side: Side) extends Dealer {
       Board(withExtra(deals next, NorthSide)),
       Board(withExtra(deals next, SouthSide)))
   }
+
+  val side: Side
+}
+
+case class StandardDealer(side: Side) extends Dealer {
+  val nbEach = 21
 }
 
 case class TestDealer(side: Side) extends Dealer {
 
+  val nbEach = 21
+
   import Piece._
 
-  def boardsCount = 21 * 4 + 1
+  override lazy val sign: Piece = G13
 
-  lazy val pieces: List[Piece] = Random.shuffle(Piece.initial)
-
-  lazy val boards: Sides[Board] = dealBoards(21)
-
-  lazy val sign: Piece = G13
-
-  lazy val middles: List[Piece] = pieces drop (boardsCount + 1)
-
-  private[variant] def dealBoards(count: Int): Sides[Board] = {
+  override def dealBoards(count: Int): Sides[Board] = {
     def withExtra(ps: List[Piece], s: Side):List[Piece] =
       (s == side) fold((pieces head) :: ps, ps)
 
@@ -123,7 +117,7 @@ object Variant {
   val default = Standard
   val test = StandardTest
 
-  val all = List(Standard, StandardTest)
+  val all = List(Standard, DuzOkey, StandardTest, DuzOkeyTest)
   val byId = all map { v => (v.id, v) } toMap
   val byKey = all map { v => (v.key, v) } toMap
 

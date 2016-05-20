@@ -53,6 +53,7 @@ class DuzOkeyVariantTest extends OkeyTest {
     
 
     "allow moves" in {
+
       "allow a piece to be drawn middle" in {
         makeDuzOkeyGame("""
 r13
@@ -148,6 +149,79 @@ r13
 r10l10g10b10r10l10g10b10r10l10g10b10b2
 """, player2).playMoves(EastSide, LeaveTaken) must beFailure
       }
+
+    }
+
+
+    "allow show sign moves" in {
+      def continuePlay(side: Side, actions: Action*)(game: Valid[Game]): Valid[Game] = game flatMap { _.playMoves(side, actions:_*) }
+
+      val firstDiscardGame = makeDuzOkeyGame("""
+r13
+r1r2r3
+b1r13
+
+r13
+""", player).playMoves(EastSide, DrawMiddle, Discard(B1))
+
+
+      val g2 = makeDuzOkeyGame("""
+r13
+r1r2r3r4r5
+b1b2b3r13
+b1b2b3
+b1b2b3
+b1b2b3r13
+""", player).playMoves(EastSide, DrawMiddle, Discard(B1))
+
+      val playTillSouth =
+        continuePlay(NorthSide, DrawMiddle, Discard(B1))_ andThen
+          continuePlay(WestSide, DrawMiddle, Discard(B1)) _
+
+      "allow before draw middle" in {
+        makeDuzOkeyGame("""
+r13
+r1r2r3
+b1r13
+""", player).playMoves(EastSide, ShowSign(R13)) must beSuccess
+      }
+
+      "allow after draw middle" in {
+        makeDuzOkeyGame("""
+r13
+r1r2r3
+b1r13
+""", player).playMoves(EastSide, DrawMiddle, ShowSign(R13)) must beSuccess
+      }
+
+      "allow on first turn" in {
+        continuePlay(NorthSide, ShowSign(R13))(firstDiscardGame) must beSuccess
+
+        (playTillSouth andThen continuePlay(SouthSide, ShowSign(R13)))(g2) must beSuccess
+      }
+
+      "not allow on second turn" in {
+        (playTillSouth andThen
+          continuePlay(SouthSide, DrawMiddle, Discard(R13)) andThen
+          continuePlay(EastSide, ShowSign(R13)))(g2) must beFailure
+      }
+
+      "not allow if not on board" in {
+        makeDuzOkeyGame("""
+r13
+r1r2r3
+b1
+""", player).playMoves(EastSide, ShowSign(R13)) must beFailure
+      }
+
+      "not allow if not sign" in {
+        makeDuzOkeyGame("""
+r13
+r1r2r3
+b1r13
+""", player).playMoves(EastSide, ShowSign(B1)) must beFailure
+      }
+
     }
 
     "discard end" in {

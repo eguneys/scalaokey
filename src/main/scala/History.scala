@@ -4,8 +4,13 @@ import format.Uci
 
 case class History(
   lastMoves: List[Uci] = Nil,
+  turns: Int,
   openStates: Sides[Option[Opens]] = Sides[Option[Opens]]
 ) {
+
+  def hasEverybodyPlayed = turns > 3
+
+  def addTurns = copy(turns = turns + 1)
 
   def withLastMove(move: Action) = copy(lastMoves = List(move.toUci))
 
@@ -21,7 +26,7 @@ case class History(
 
 object History {
   def apply(actions: Action*): History =
-    History(lastMoves = actions.toList map(_.toUci))
+    History(lastMoves = actions.toList map(_.toUci), turns = 0)
 }
 
 case class Opens(pairs: Boolean, old: Boolean)

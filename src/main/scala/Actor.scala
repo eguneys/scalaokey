@@ -22,6 +22,10 @@ case class Actor(player: Player, table: Table) {
           move(action) {
             player.drawLeft toValid "Not drawn left" flatMap (table.leaveTaken(side, _))
           }
+        case ShowSign(piece) =>
+          move(action) {
+            table.showSign(side, piece)
+          }
         case OpenSeries(pieces) =>
           grouper.seriesSeq(pieces) flatMap { series =>
             move(action) { table.openSeries(side, series) }
@@ -70,10 +74,12 @@ case class Actor(player: Player, table: Table) {
 
   lazy val moves: List[Action] = player.drawPiece fold(afterDraw, draw)
 
-  def draw: List[Action] = List(drawMiddle, drawLeft) flatten
+  def draw: List[Action] = List(drawMiddle, drawLeft, showSign) flatten
 
   def drawMiddle: Option[Action] = table.drawMiddle(side).toOption map const(DrawMiddle)
   def drawLeft: Option[Action] = table.drawLeft(side).toOption map const(DrawLeft)
+
+  def showSign: Option[Action] = !table.hasOpener && !player.history.hasEverybodyPlayed option ShowSign
 
   def afterDraw: List[Action] = table.hasOpener.fold(
     afterDrawWithOpener,
@@ -84,7 +90,7 @@ case class Actor(player: Player, table: Table) {
     afterDrawLeft
   )
 
-  def afterDrawNoOpener: List[Action] = discardEnds ::: (List(discardMiddle) flatten)
+  def afterDrawNoOpener: List[Action] = discardEnds ::: (List(showSign, discardMiddle) flatten)
 
   def afterDrawMiddle: List[Action] = List(discardMiddle, openSeries, openPairs, collectOpen, dropSeries, dropPairs) flatten
 

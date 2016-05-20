@@ -93,6 +93,8 @@ case class Table(
     }) toValid "No piece on board " + piece
   }
 
+  def showSign(side: Side, piece: Piece): Valid[Table] = boards(side).exists(piece) && (piece == sign) option this toValid "No piece on board " + piece
+
   def dropSeries(side: Side, piece: Piece, updated: OpenSerie, at: OpenPos): Valid[Table] = (for {
     o1 <- opener toValid "No opener on table"
     b1 <- boards(side) take piece toValid s"No $piece to drop"

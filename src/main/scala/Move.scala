@@ -25,7 +25,7 @@ case class Move(
       action match {
         case dm@DrawMiddle(p) => h1.withLastMove(dm)
         case dl@DrawLeft(p) => h1.withLastMove(dl)
-        case dd@Discard(p) => h1.addLastMove(dd).withOpenStates(after.opener)
+        case dd@Discard(p) => h1.addLastMove(dd).withOpenStates(after.opener).addTurns
         case a => h1.addLastMove(a)
       }
     }
@@ -82,6 +82,13 @@ case object DiscardEndPairs extends Action {
   override val key = "ddp"
 
   override def withPieceGroup(group: PieceGroups) = OpenPairs(group)
+}
+
+
+case object ShowSign extends Action {
+  override val key = "ss"
+
+  override def withPiece(piece: Piece) = ShowSign(piece)
 }
 
 case object OpenSeries extends Action {
@@ -160,6 +167,12 @@ case class DiscardEndPairs(pieces: PieceGroups) extends Action {
   override def toUci: Uci = Uci.Move(this, group = Some(pieces))
 }
 
+case class ShowSign(piece: Piece) extends Action {
+  override def toSingle = ShowSign
+
+  override def toUci: Uci = Uci.Move(this, piece = Some(piece))
+}
+
 case class OpenSeries(pieces: PieceGroups) extends Action {
   override def toSingle = OpenSeries
 
@@ -177,7 +190,7 @@ case class CollectOpen(save: (Board, Opener)) extends Action {
 
 
 object Action {
-  lazy val all: List[Action] = List(DrawLeft, DrawMiddle, Discard, OpenSeries, OpenPairs, CollectOpen, LeaveTaken, DropOpenSeries, DropOpenPairs)
+  lazy val all: List[Action] = List(DrawLeft, DrawMiddle, Discard, DiscardEndSeries, DiscardEndPairs, ShowSign, OpenSeries, OpenPairs, CollectOpen, LeaveTaken, DropOpenSeries, DropOpenPairs)
 
   def byKey(key: String) = allKeys get key
 
