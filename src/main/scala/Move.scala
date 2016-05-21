@@ -73,7 +73,7 @@ case object DiscardEndSeries extends Action {
 
   override val key = "dds"
 
-  override def withPieceGroup(group: PieceGroups) = OpenSeries(group)
+  override def withPieceGroup(group: PieceGroups) = DiscardEndSeries(group)
 }
 
 case object DiscardEndPairs extends Action {
@@ -81,7 +81,7 @@ case object DiscardEndPairs extends Action {
 
   override val key = "ddp"
 
-  override def withPieceGroup(group: PieceGroups) = OpenPairs(group)
+  override def withPieceGroup(group: PieceGroups) = DiscardEndPairs(group)
 }
 
 

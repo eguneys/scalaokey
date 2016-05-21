@@ -26,8 +26,7 @@ case class Situation(table: Table, player: Player) {
   }
 
   lazy val lastDiscardEndPiece = {
-    val board = table.boards(player.side)
-    ((board.size == 1) option board.pieceList.headOption) flatten
+    table.discards(player.side).headOption
   }
 
   def middleEnd: Boolean = lastDiscard.isDefined && table.middles.isEmpty
@@ -56,6 +55,7 @@ case class Situation(table: Table, player: Player) {
 
   def status: Option[Status] =
     if (normalEnd) Status.NormalEnd.some
+    else if (variantEnd) Status.VariantEnd.some
     else if (middleEnd) Status.MiddleEnd.some
     else none
 

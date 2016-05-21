@@ -6,6 +6,13 @@ import Piece._
 class UciMoveTest extends OkeyTest {
 
   "from strings" should {
+    "discard end series" in {
+      val move = Uci.Move.fromStrings(key = "dds", pieceGroupS = Some("r1r2r3"))
+      move must beSome.like { case m =>
+        m.action must_== DiscardEndSeries(R1.|>(3))
+      }
+    }
+
     "discard" in {
       val move = Uci.Move.fromStrings(key = "dd", pieceS = Some("r1"))
       move must beSome.like { case m =>
@@ -46,6 +53,12 @@ class UciMoveTest extends OkeyTest {
         }
       }
 
+      "discard end series" in {
+        Uci.Move.fromStrings(key = "dds", pieceGroupS = Some("r1r2r3")) must beSome.like { case m =>
+          m.uci must_== "ddsGr1r2r3"
+        }
+      }
+
       "drop open series" in {
         Uci.Move.fromStrings(key = "dos", pieceS = Some("r1"), posS = Some("l1")) must beSome.like { case m =>
           m.uci must_== "dosPr1@l1"
@@ -68,6 +81,11 @@ class UciMoveTest extends OkeyTest {
         val dos = DropOpenSeries(R1, AppendLeft(2))
         dos.toUci must_== Uci.Move(dos, piece = Some(R1), openPos = Some(AppendLeft(2)))
       }
+
+      "dds ddp" in {
+        val dds = DiscardEndSeries(R1.|>(3))
+        dds.toUci must_== Uci.Move(dds, group = Some(List(R1.|>(3))))
+      }
     }
 
     "read" in {
@@ -84,6 +102,12 @@ class UciMoveTest extends OkeyTest {
       "piece group" in {
         Uci("osGr1r2r3 g1g2g3") must beSome.like { case m =>
           m.action must_== OpenSeries(R1.|>(3), G1.|>(3))
+        }
+      }
+
+      "discard end series" in {
+        Uci("ddsGr1r2r3 g1g2g3") must beSome.like { case m =>
+          m.action must_== DiscardEndSeries(R1.|>(3), G1.|>(3))
         }
       }
 

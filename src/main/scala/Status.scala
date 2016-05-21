@@ -14,8 +14,9 @@ object Status {
   case object Aborted extends Status(25) // from this point game is finished
   case object NormalEnd extends Status(30)
   case object MiddleEnd extends Status(60)
+  case object VariantEnd extends Status(70) // the variant has a special ending
 
-  val all = List(Created, Started, Aborted, NormalEnd, MiddleEnd)
+  val all = List(Created, Started, Aborted, NormalEnd, MiddleEnd, VariantEnd)
 
   val byId = all map { v => (v.id, v) } toMap
 

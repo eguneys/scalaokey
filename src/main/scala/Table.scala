@@ -50,7 +50,11 @@ case class Table(
   def discardEndToValid(side: Side, groups: List[Piece]): Valid[Table] = (for {
     b1 <- boards(side) take groups
     if b1.size == 1
-  } yield copy(boards.withSide(side, b1))) toValid "Invalid pieces to discard end"
+    piece <- b1.pieceList.headOption
+    b2 <- boards(side) take piece
+    d1 = piece :: discards(side)
+  } yield copy(boards.withSide(side, b2),
+    discards = discards.withSide(side, d1))) toValid "Invalid pieces to discard end"
 
 
   def openSeries(side: Side, groups: List[OpenSerie]): Valid[Table] = (for {

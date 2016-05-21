@@ -63,15 +63,25 @@ object Uci
 
   def apply(move: String): Option[Uci] = applyDrop(move) orElse applyMove(move)
 
-  def applyMove(move: String): Option[Uci] =
-    Action.byKey(move take 2) map { singleAction =>
-      val rest = move drop 3
-      move.lift(2) match {
-        case Some('P') => Move(singleAction, piece = Piece byKey(rest))
-        case Some('G') => Move(singleAction, group = Move.readGroups(rest))
+  val moveR = """^([a-z]{2}[a-z]?)(?:(P|G)(.*))?""".r
+  def applyMove(move: String): Option[Uci] = move match {
+    case moveR(actionS, pOrG, rest) => Action.byKey(actionS) map { singleAction =>
+      pOrG match {
+        case "P" => Move(singleAction, piece = Piece byKey(rest))
+        case "G" => Move(singleAction, group = Move.readGroups(rest))
         case _ => Move(singleAction)
       }
     }
+
+  }
+    // Action.byKey(move take 2) map { singleAction =>
+    //   val rest = move drop 3
+    //   move.lift(2) match {
+    //     case Some('P') => Move(singleAction, piece = Piece byKey(rest))
+    //     case Some('G') => Move(singleAction, group = Move.readGroups(rest))
+    //     case _ => Move(singleAction)
+    //   }
+    // }
 
   val dropR = """^(dop|dos)P([^@]*)@(.*)""".r
   def applyDrop(move: String): Option[Uci] = move match {

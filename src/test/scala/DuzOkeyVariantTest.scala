@@ -236,6 +236,10 @@ r1r2r3r4r5r6g2r2b2l2l10l11l12l13b1
         gameEndSeries must beDuzOkey("""
 r13
 r1r2
+r1r2r3r4r5r6g2r2b2l2l10l11l12l13
+
+
+
 b1
 """)
 
@@ -257,6 +261,10 @@ r1r1r2
         gameEndSeries must beDuzOkey("""
 r13
 r1r2
+r1r1
+
+
+
 r2
 """)
 
