@@ -84,7 +84,7 @@ r13
 
         val system = okey.variant.StandardScoringSystem
         def makeSheet(handSum: Int, flags: Flag*): EndScoreSheet =
-          EndScoreSheet(handSum, flags map (f => f -> system.scorer(f, flags toList)) toMap)
+          system.EndScoreSheet(handSum, flags map (f => f -> system.scorer(f, flags toList)) toMap)
 
         "all different" in {
           val scores = Sides(

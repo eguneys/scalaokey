@@ -1,7 +1,7 @@
 package okey
 package variant
 
-import okey.{ ScoringSystem => AbstractScoringSystem }
+import okey.{ ScoringSystem => AbstractScoringSystem, EndScoreSheet => AbstractEndScoreSheet }
 
 case object Standard extends Variant(
   id = 1,
@@ -51,6 +51,27 @@ object StandardScoringSystem extends AbstractScoringSystem {
   //     sum * mult
   //   }
   // }
+
+  case class EndScoreSheet(handSum: Int, scores: Map[Flag, Option[FlagScore]]) extends AbstractEndScoreSheet {
+
+    val total: Int = {
+      val (sum, mult) = scores.foldRight((0, 1)) {
+        case ((f, Some(HandSum)), (s, m)) => (s + handSum, m)
+        case ((f, Some(Penalty)), (s, m)) => (s + 101, m)
+        case ((f, Some(Erase)), (s, m)) => (s - 101, m)
+        case ((f, Some(Double)), (s, m)) => (s, m * 2)
+        case (_, (s, m)) => (s, m)
+      }
+      sum * mult
+    }
+  }
+
+  def sheet(situation: Situation, side: Side): EndScoreSheet = {
+    val scoresValue = scores(situation, side)
+    val handSumValue = handSum(situation, side)
+
+    EndScoreSheet(handSumValue, scoresValue)
+  }
 
   def scorer(flag: Flag, flags: List[Flag]): Option[FlagScore] = flag match {
     case EndByHand => Double.some

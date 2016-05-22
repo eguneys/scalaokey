@@ -314,7 +314,6 @@ l10l11l12l13l1b1
 
         val system = okey.variant.DuzOkeyScoringSystem
 
-
         "series end" in {
 
           val gameEndSeries = makeDuzOkeyGame("""
@@ -325,7 +324,9 @@ r1r2r3r4r5r6g2r2b2l2l10l11l12l13b1
 
 
           gameEndSeries must beSuccess.like { case g =>
-            system.flags(g.situation, EastSide) must_== List()
+            g.situation.winner must beSome(EastSide)
+            system.flags(g.situation, EastSide) must_== List(EndByHand)
+            system.flags(g.situation, NorthSide) must_== List()
           }
         }
 
@@ -338,7 +339,9 @@ r1r1r2
 """, player2).playMoves(EastSide, DiscardEndPairs(R1.w))
 
           gameEndSeries must beSuccess.like { case g =>
-            system.flags(g.situation, EastSide) must_== List(EndByPair)
+            g.situation.winner must beSome(EastSide)
+            system.flags(g.situation, EastSide) must_== List(EndByHand, EndByPair)
+            system.flags(g.situation, WestSide) must_== List()
           }
         }
 
@@ -350,7 +353,32 @@ r1r1r1
 """, player2).playMoves(EastSide, DiscardEndPairs(R1.w))
 
           gameEndSeries must beSuccess.like { case g =>
-            system.flags(g.situation, EastSide) must_== List(EndByPair, EndByDiscardOkey)
+            system.flags(g.situation, EastSide) must_== List(EndByHand, EndByPair, EndByDiscardOkey)
+            system.flags(g.situation, SouthSide) must_== List()
+          }
+        }
+
+        "evaluate score sheet" should {
+          import okey.variant.{ DuzOkeyScoringSystem }
+          import DuzOkeyScoringSystem._
+
+          def makeSheet(handSum: Int, flags: Flag*): EndScoreSheet =
+            EndScoreSheet(handSum, flags map (f => f -> system.scorer(f, flags toList)) toMap)
+
+
+          "normal end" in {
+            makeSheet(12, EndByHand).total must_== -2
+          }
+          "pair end" in {
+            makeSheet(12, EndByHand, EndByPair).total must_== -4
+          }
+
+          "discard okey" in {
+            makeSheet(12, EndByHand, EndByDiscardOkey).total must_== -4
+          }
+
+          "pair discard okey" in {
+            makeSheet(12, EndByHand, EndByPair, EndByDiscardOkey).total must_== 8
           }
         }
       }

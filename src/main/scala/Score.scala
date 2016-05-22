@@ -12,18 +12,32 @@ object ScoreSheet {
   val emptySheet = ScoreSheet(Nil)
 }
 
-case class EndScoreSheet(val handSum: Int, val scores: Map[Flag, Option[FlagScore]]) {
-  import FlagScore._
+trait EndScoreSheet {
 
-  val total: Int = {
-    val (sum, mult) = scores.foldRight((0, 1)) {
-      case ((f, Some(HandSum)), (s, m)) => (s + handSum, m)
-      case ((f, Some(Penalty)), (s, m)) => (s + 101, m)
-      case ((f, Some(Erase)), (s, m)) => (s - 101, m)
-      case ((f, Some(Double)), (s, m)) => (s, m * 2)
-      case (_, (s, m)) => (s, m)
-    }
-    sum * mult
+  val handSum: Int
+  val scores: Map[Flag, Option[FlagScore]]
+
+  val total: Int
+
+  // import FlagScore._
+
+  // val total: Int = {
+  //   val (sum, mult) = scores.foldRight((0, 1)) {
+  //     case ((f, Some(HandSum)), (s, m)) => (s + handSum, m)
+  //     case ((f, Some(Penalty)), (s, m)) => (s + 101, m)
+  //     case ((f, Some(Erase)), (s, m)) => (s - 101, m)
+  //     case ((f, Some(Double)), (s, m)) => (s, m * 2)
+  //     case (_, (s, m)) => (s, m)
+  //   }
+  //   sum * mult
+  // }
+}
+
+object EndScoreSheet {
+  def byVariant(v: okey.variant.Variant) = v match {
+    case okey.variant.DuzOkey => okey.variant.DuzOkeyScoringSystem.EndScoreSheet
+    case okey.variant.DuzOkeyTest => okey.variant.DuzOkeyScoringSystem.EndScoreSheet
+    case _ => okey.variant.StandardScoringSystem.EndScoreSheet
   }
 }
 
@@ -34,6 +48,14 @@ sealed abstract class FlagScore(val id: Int)
 abstract class ScoringSystem {
 
   import ScoringSystem._
+
+  def handSum(situation: Situation, side: Side) = 
+    situation.table.handSum(side)
+
+  def scores(situation:Situation, side: Side) = {
+    val fs = flags(situation, side)
+    fs map { f => f -> scorer(f, fs) } toMap
+  }
 
   def scorer(flag: Flag, flags: List[Flag]): Option[FlagScore]
 
@@ -48,17 +70,7 @@ abstract class ScoringSystem {
     case HandOpenSome => situation.openStates(side).isDefined
   }
 
-  def handSum(situation: Situation, side: Side): Int = situation.table.handSum(side)
-
-  def sheet(situation: Situation, side: Side): EndScoreSheet = {
-    val sum = handSum(situation, side)
-    val scores = {
-      val fs = flags(situation, side)
-      fs map { f => f -> scorer(f, fs) } toMap
-    }
-
-    EndScoreSheet(sum, scores)
-  }
+  def sheet(situation: Situation, side: Side): EndScoreSheet
 }
 
 object FlagScore {

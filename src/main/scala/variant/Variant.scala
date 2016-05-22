@@ -12,6 +12,9 @@ abstract class Variant(
 
   def standard = this == Standard
   def yuzbir = this == Standard || this == StandardTest
+  def duzOkey = this == DuzOkey || this == DuzOkeyTest
+
+  def scoreFinish = duzOkey
 
   def exotic = !standard
 

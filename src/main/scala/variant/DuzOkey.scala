@@ -2,7 +2,7 @@ package okey
 package variant
 
 import scala.util.Random
-import okey.{ ScoringSystem => AbstractScoringSystem }
+import okey.{ ScoringSystem => AbstractScoringSystem, EndScoreSheet => AbstractEndScoreSheet }
 
 case object DuzOkey extends Variant(
   id = 3,
@@ -17,6 +17,11 @@ case object DuzOkey extends Variant(
 
   override def specialEnd(situation: Situation) =
     situation.duzNormalEnd || situation.duzPairEnd
+
+  override def winner(situation: Situation): Option[Side] =
+    if (situation.middleEnd) None
+    else
+      specialEnd(situation) option situation.side
 
   override def dealer(side: Side): Dealer = DuzOkeyDealer(side)
 
@@ -49,6 +54,8 @@ case class DuzOkeyDealerTest(side: Side) extends Dealer {
 
   val nbEach = 14
 
+  override lazy val middles: List[Piece] = pieces take 12
+
   override lazy val sign: Piece = G13
 
   override def dealBoards(count: Int): Sides[Board] = {
@@ -75,16 +82,39 @@ object DuzOkeyScoringSystem extends AbstractScoringSystem {
   import AbstractScoringSystem._
   import FlagScore._
 
+  // don't use situation.winner it uses scoresheet
   override def flags(situation: Situation, side: Side): List[Flag] = allFlags filter {
+    case _ if (situation.side != side) => false
     case EndByPair => situation.duzPairEnd
     case EndByDiscardOkey => situation.duzOkeyEnd
+    case EndByHand => situation.end
     case _ => false
   }
 
   def scorer(flag: Flag, flags: List[Flag]): Option[FlagScore] = flag match {
+    case EndByHand => Penalty.some
     case EndByPair => Penalty.some
     case EndByDiscardOkey => Double.some
     case _ => None
 
+  }
+
+  case class EndScoreSheet(handSum: Int, scores: Map[Flag, Option[FlagScore]]) extends AbstractEndScoreSheet {
+
+    val total: Int = {
+      val (sum, mult) = scores.foldRight((0, 1)) {
+        case ((f, Some(Penalty)), (s, m)) => (s - 2, m)
+        case ((f, Some(Double)), (s, m)) => (s, m * 2)
+        case (_, (s, m)) => (s, m)
+      }
+      sum * mult
+    }
+  }
+
+  def sheet(situation: Situation, side: Side): EndScoreSheet = {
+    val scoresValue = scores(situation, side)
+    val handSumValue = handSum(situation, side)
+
+    EndScoreSheet(handSumValue, scoresValue)
   }
 }
