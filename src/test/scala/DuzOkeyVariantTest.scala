@@ -378,7 +378,7 @@ r1r1r1
           }
 
           "pair discard okey" in {
-            makeSheet(12, EndByHand, EndByPair, EndByDiscardOkey).total must_== 8
+            makeSheet(12, EndByHand, EndByPair, EndByDiscardOkey).total must_== -8
           }
         }
       }

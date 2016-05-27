@@ -12,8 +12,8 @@ object Status {
   case object Created extends Status(10)
   case object Started extends Status(20)
   case object Aborted extends Status(25) // from this point game is finished
-  case object NormalEnd extends Status(30)
-  case object MiddleEnd extends Status(60)
+  case object MiddleEnd extends Status(30)
+  case object NormalEnd extends Status(40) // from this point game round is counted
   case object VariantEnd extends Status(70) // the variant has a special ending
 
   val all = List(Created, Started, Aborted, NormalEnd, MiddleEnd, VariantEnd)
