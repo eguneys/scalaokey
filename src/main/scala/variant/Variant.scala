@@ -14,6 +14,8 @@ abstract class Variant(
   def yuzbir = this == Standard || this == StandardTest
   def duzOkey = this == DuzOkey || this == DuzOkeyTest
 
+  def middleEndCounts = yuzbir
+
   def scoreFinish = duzOkey
 
   def exotic = !standard

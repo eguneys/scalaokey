@@ -314,6 +314,21 @@ l10l11l12l13l1b1
 
         val system = okey.variant.DuzOkeyScoringSystem
 
+        "middle end" in {
+          val gameEndMiddle = makeDuzOkeyGame("""
+r13
+
+r1r2r3r4r5r6g2r2b2l2l10l11l12l13b1
+""", player2).playMoves(EastSide, Discard(R1))
+
+          gameEndMiddle must beSuccess.like { case g =>
+            g.situation.end must beTrue
+            g.situation.winner must beNone
+            system.flags(g.situation, EastSide) must_== List()
+            system.flags(g.situation, EastSide.next) must_== List()
+          }
+        }
+
         "series end" in {
 
           val gameEndSeries = makeDuzOkeyGame("""

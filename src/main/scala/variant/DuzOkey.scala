@@ -87,7 +87,7 @@ object DuzOkeyScoringSystem extends AbstractScoringSystem {
     case _ if (situation.side != side) => false
     case EndByPair => situation.duzPairEnd
     case EndByDiscardOkey => situation.duzOkeyEnd
-    case EndByHand => situation.end
+    case EndByHand => situation.variantEnd
     case _ => false
   }
 
