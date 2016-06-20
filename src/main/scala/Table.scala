@@ -85,15 +85,12 @@ case class Table(
   def leaveTaken(side: Side, piece: Piece): Valid[Table] = {
     val dside = side.previous
     (for {
-      o1 <- opener
-      o2 <- o1.collectOpen(side) orElse o1.some
-      b1 <- o1.boardSave(side) orElse boards(side).some
+      b1 <- boards(side).some
       b2 <- b1 take piece
       d1 = piece :: discards(dside)
     } yield {
       copy(boards = boards.withSide(side, b2),
-        discards = discards.withSide(dside, d1),
-        opener = Some(o2))
+        discards = discards.withSide(dside, d1))
     }) toValid "No piece on board " + piece
   }
 

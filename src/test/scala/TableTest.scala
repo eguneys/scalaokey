@@ -207,26 +207,21 @@ g1g2g3
         }
       }
 
+      "allow drawn piece to be left on open" in {
+        """
+r13
 
-
-//       "allow piece to be processed" in {
-//         """
-// r13
-
-// r1r2r3
-
-
-
-
-
-
-
-// wg4g5g6
-// """.processPiece(EastSide, 1, R1) must beSuccess.like {
-//           case t =>
-//             t.boards(EastSide) must havePieces(R2, R3)
-//         }
-//       }
+g1g2g3r1
+""".seqTable(
+          _ openPairs(EastSide, List(List(G1, R1))),
+          _ leaveTaken(EastSide, G2)
+        ) must beSuccess.like {
+          case t =>
+            t.boards(EastSide) must havePieces(G3)
+            t.discards(SouthSide) must containPieces(G2)
+            t must haveOpenPairs(List(G1, R1))
+        }
+      }
 
 
       "not allow open pieces to be collected if not opened" in {
