@@ -19,8 +19,8 @@ case class Actor(player: Player, table: Table) {
             move(DrawLeft(p)) { table.drawLeft(side) }
           }
         case LeaveTaken =>
-          move(action) {
-            player.drawLeft toValid "Not drawn left" flatMap (table.leaveTaken(side, _))
+          player.drawLeft flatMap { p =>
+            move(LeaveTaken(p)) { (table.leaveTaken(side, p)) }
           }
         case ShowSign(piece) =>
           move(action) {

@@ -8,6 +8,7 @@ case class Player(side: Side,
   def apply(action: Action): Player = action match {
     case DrawMiddle(p) => copy(drawMiddle = true)
     case LeaveTaken => copy(drawLeft = None)
+    case LeaveTaken(_) => copy(drawLeft = None)
     case DrawLeft(p) => copy(drawLeft = Some(p))
     case Discard(p) => nextPlayer
     case _ => this

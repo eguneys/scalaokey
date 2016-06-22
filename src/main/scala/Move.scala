@@ -188,6 +188,11 @@ case class CollectOpen(save: (Board, Opener)) extends Action {
   override def toSingle = CollectOpen
 }
 
+case class LeaveTaken(piece: Piece) extends Action {
+  override def toSingle = LeaveTaken
+
+  override def toUci: Uci = Uci.Move(this, piece = Some(piece))
+}
 
 object Action {
   lazy val all: List[Action] = List(DrawLeft, DrawMiddle, Discard, DiscardEndSeries, DiscardEndPairs, ShowSign, OpenSeries, OpenPairs, CollectOpen, LeaveTaken, DropOpenSeries, DropOpenPairs)
