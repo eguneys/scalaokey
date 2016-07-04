@@ -66,9 +66,18 @@ trait Dealer {
 
   lazy val pieces: List[Piece] = Random.shuffle(Piece.initial)
 
-  lazy val sign: Piece = pieces(nbBoards)
+  // lazy val sign: Piece = pieces(nbBoards)
+  // lazy val middles: List[Piece] = pieces drop (nbBoards + 1)
 
-  lazy val middles: List[Piece] = pieces drop (nbBoards + 1)
+  // dont allow fake to be sign
+  lazy val signMiddles = pieces drop nbBoards
+  lazy val sign: Piece = signMiddles.find(_ != Piece.F1) get
+  lazy val middles: List[Piece] = signMiddles.takeWhile(_ == Piece.F1) ::: signMiddles.dropWhile(_ == Piece.F1).tail
+
+  // http://stackoverflow.com/questions/38167975/how-to-dropfirst-takefirst-item-according-to-a-predicate-in-scala?noredirect=1#comment63776147_38167975
+  // private def sep(l: List[Piece]): (Piece, List[Piece]) =
+  //   (l.find(_ != sign),
+  //     l.takeWhile(_ == sign) ::: l.dropWhile(_ == sign).tail)
 
   lazy val boards: Sides[Board] = dealBoards(nbEach)
 
