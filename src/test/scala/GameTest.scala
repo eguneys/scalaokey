@@ -2,6 +2,8 @@ package okey
 
 import Piece._
 
+import scalaz.Validation.FlatMap._
+
 class GameTest extends OkeyTest {
   "playing a game" should {
 

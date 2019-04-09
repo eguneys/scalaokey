@@ -2,19 +2,23 @@ import ornicar.scalalib
 
 package object okey
 
-    extends scalalib.Validation
-    with scalalib.OrnicarMonoid.Instances
+extends scalalib.Validation
+    with scalalib.Common
     with scalalib.OrnicarOption
+    with scalalib.Zeros
 
     with scalalib.Zero.Syntax
-    with scalalib.Zero.Instances
 
     with scalaz.std.OptionFunctions
+
     with scalaz.syntax.std.ToOptionOps
     with scalaz.syntax.std.ToOptionIdOps
 
     with scalaz.std.ListInstances
     with scalaz.std.StringInstances
+
+    with scalaz.syntax.ToValidationOps
+    with scalaz.syntax.ToFunctorOps
 
     with scalaz.syntax.std.ToBooleanOps {
 

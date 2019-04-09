@@ -1,6 +1,7 @@
 package okey
 package variant
 
+import scalaz.Validation.FlatMap._
 import scala.util.Random
 
 abstract class Variant(
@@ -128,6 +129,7 @@ case class TestDealer(side: Side) extends Dealer {
 }
 
 object Variant {
+  
   val default = Standard
   val test = StandardTest
 

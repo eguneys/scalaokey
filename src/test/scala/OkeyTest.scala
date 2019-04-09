@@ -4,11 +4,11 @@ import okey.format.{ Visual }
 
 import Piece._
 
-import org.specs2.matcher.Matcher
+import org.specs2.matcher.{ Matcher, ValidationMatchers }
 import org.specs2.mutable.Specification
-import ornicar.scalalib.test.ValidationMatchers
 
 import scalaz.{ Validation => V }
+import V.FlatMap._
 
 trait OkeyTest extends Specification
     with ValidationMatchers {
@@ -155,7 +155,9 @@ trait OkeyTest extends Specification
 
   def haveScores(totals: Sides[Int]): Matcher[Valid[Game]] = beSuccess.like {
     case g => g.situation.endScores must beSome.like {
-      case sheets => sheets map(_.total) must_== totals
+      case sheets => {
+        (sheets map(_.total):Sides[Int]) must_== totals
+      }
     }
   }
 }

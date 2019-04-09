@@ -1,5 +1,7 @@
 package okey
 
+import scalaz.Validation.FlatMap._
+import scalaz.Validation.{ success }
 import variant.{ Variant }
 
 case class Table(

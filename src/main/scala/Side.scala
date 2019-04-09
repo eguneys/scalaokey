@@ -1,6 +1,6 @@
 package okey
 
-import ornicar.scalalib
+import ornicar.scalalib.Zero
 
 sealed trait Side {
   val next: Side
@@ -106,7 +106,6 @@ case class Sides[A](
 }
 
 object Sides {
-  import scalalib.Zero
 
   def apply[A : Zero]: Sides[A] = Sides(
     zero[A],

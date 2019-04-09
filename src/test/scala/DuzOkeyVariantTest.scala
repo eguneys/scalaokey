@@ -6,6 +6,8 @@ import Piece._
 
 import org.specs2.matcher.Matcher
 
+import scalaz.Validation.FlatMap._
+
 class DuzOkeyVariantTest extends OkeyTest {
 
   "Duz okey" should {
