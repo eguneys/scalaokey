@@ -1,4 +1,11 @@
+name := "scalaokey"
+
+organization := "net.oyunkeyf"
+
+version := "1.0.0"
+
 scalaVersion := "2.12.6"
+crossScalaVersions := Seq("2.11.12", "2.12.6")
 
 libraryDependencies ++= List(
   "org.scalaz" %% "scalaz-core" % "7.2.23",

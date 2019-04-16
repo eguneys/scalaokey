@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>net.oyunkeyf</groupId>
+    <artifactId>scalaokey_2.12</artifactId>
+    <packaging>jar</packaging>
+    <description>scalaokey</description>
+    <version>1.0.0</version>
+    <name>scalaokey</name>
+    <organization>
+        <name>net.oyunkeyf</name>
+    </organization>
+    <dependencies>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>2.12.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.scalaz</groupId>
+            <artifactId>scalaz-core_2.12</artifactId>
+            <version>7.2.23</version>
+        </dependency>
+        <dependency>
+            <groupId>org.specs2</groupId>
+            <artifactId>specs2-core_2.12</artifactId>
+            <version>4.2.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.specs2</groupId>
+            <artifactId>specs2-scalaz_2.12</artifactId>
+            <version>4.2.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ornicar</groupId>
+            <artifactId>scalalib_2.12</artifactId>
+            <version>6.6</version>
+        </dependency>
+    </dependencies>
+    <repositories>
+        <repository>
+            <id>ScalazBintrayRepo</id>
+            <name>Scalaz Bintray Repo</name>
+            <url>http://dl.bintray.com/scalaz/releases/</url>
+            <layout>default</layout>
+        </repository>
+    </repositories>
+</project>

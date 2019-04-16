@@ -10,7 +10,6 @@ extends scalalib.Validation
     with scalalib.Zero.Syntax
 
     with scalaz.std.OptionFunctions
-
     with scalaz.syntax.std.ToOptionOps
     with scalaz.syntax.std.ToOptionIdOps
 
@@ -20,7 +19,8 @@ extends scalalib.Validation
     with scalaz.syntax.ToValidationOps
     with scalaz.syntax.ToFunctorOps
 
-    with scalaz.syntax.std.ToBooleanOps {
+    with scalaz.syntax.std.ToBooleanOps
+    with scalaz.syntax.ToIdOps {
 
   val Red = Color.Red
   val Black = Color.Black
